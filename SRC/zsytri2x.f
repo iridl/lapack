@@ -1,11 +1,129 @@
+*> \brief \b ZSYTRI2X
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*> \htmlonly
+*> Download ZSYTRI2X + dependencies 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zsytri2x.f"> 
+*> [TGZ]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zsytri2x.f"> 
+*> [ZIP]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zsytri2x.f"> 
+*> [TXT]</a>
+*> \endhtmlonly 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE ZSYTRI2X( UPLO, N, A, LDA, IPIV, WORK, NB, INFO )
+* 
+*       .. Scalar Arguments ..
+*       CHARACTER          UPLO
+*       INTEGER            INFO, LDA, N, NB
+*       ..
+*       .. Array Arguments ..
+*       INTEGER            IPIV( * )
+*       COMPLEX*16         A( LDA, * ), WORK( N+NB+1,* )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> ZSYTRI2X computes the inverse of a complex symmetric indefinite matrix
+*> A using the factorization A = U*D*U**T or A = L*D*L**T computed by
+*> ZSYTRF.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] UPLO
+*> \verbatim
+*>          UPLO is CHARACTER*1
+*>          Specifies whether the details of the factorization are stored
+*>          as an upper or lower triangular matrix.
+*>          = 'U':  Upper triangular, form is A = U*D*U**T;
+*>          = 'L':  Lower triangular, form is A = L*D*L**T.
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The order of the matrix A.  N >= 0.
+*> \endverbatim
+*>
+*> \param[in,out] A
+*> \verbatim
+*>          A is COMPLEX*16 array, dimension (LDA,N)
+*>          On entry, the NNB diagonal matrix D and the multipliers
+*>          used to obtain the factor U or L as computed by ZSYTRF.
+*>
+*>          On exit, if INFO = 0, the (symmetric) inverse of the original
+*>          matrix.  If UPLO = 'U', the upper triangular part of the
+*>          inverse is formed and the part of A below the diagonal is not
+*>          referenced; if UPLO = 'L' the lower triangular part of the
+*>          inverse is formed and the part of A above the diagonal is
+*>          not referenced.
+*> \endverbatim
+*>
+*> \param[in] LDA
+*> \verbatim
+*>          LDA is INTEGER
+*>          The leading dimension of the array A.  LDA >= max(1,N).
+*> \endverbatim
+*>
+*> \param[in] IPIV
+*> \verbatim
+*>          IPIV is INTEGER array, dimension (N)
+*>          Details of the interchanges and the NNB structure of D
+*>          as determined by ZSYTRF.
+*> \endverbatim
+*>
+*> \param[out] WORK
+*> \verbatim
+*>          WORK is COMPLEX*16 array, dimension (N+NNB+1,NNB+3)
+*> \endverbatim
+*>
+*> \param[in] NB
+*> \verbatim
+*>          NB is INTEGER
+*>          Block size
+*> \endverbatim
+*>
+*> \param[out] INFO
+*> \verbatim
+*>          INFO is INTEGER
+*>          = 0: successful exit
+*>          < 0: if INFO = -i, the i-th argument had an illegal value
+*>          > 0: if INFO = i, D(i,i) = 0; the matrix is singular and its
+*>               inverse could not be computed.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complex16SYcomputational
+*
+*  =====================================================================
       SUBROUTINE ZSYTRI2X( UPLO, N, A, LDA, IPIV, WORK, NB, INFO )
 *
-*  -- LAPACK routine (version 3.3.0) --
+*  -- LAPACK computational routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2010
-*
-*  -- Written by Julie Langou of the Univ. of TN    --
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -13,61 +131,13 @@
 *     ..
 *     .. Array Arguments ..
       INTEGER            IPIV( * )
-      DOUBLE COMPLEX     A( LDA, * ), WORK( N+NB+1,* )
+      COMPLEX*16         A( LDA, * ), WORK( N+NB+1,* )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  ZSYTRI2X computes the inverse of a complex symmetric indefinite matrix
-*  A using the factorization A = U*D*U**T or A = L*D*L**T computed by
-*  ZSYTRF.
-*
-*  Arguments
-*  =========
-*
-*  UPLO    (input) CHARACTER*1
-*          Specifies whether the details of the factorization are stored
-*          as an upper or lower triangular matrix.
-*          = 'U':  Upper triangular, form is A = U*D*U**T;
-*          = 'L':  Lower triangular, form is A = L*D*L**T.
-*
-*  N       (input) INTEGER
-*          The order of the matrix A.  N >= 0.
-*
-*  A       (input/output) DOUBLE COMPLEX array, dimension (LDA,N)
-*          On entry, the NNB diagonal matrix D and the multipliers
-*          used to obtain the factor U or L as computed by ZSYTRF.
-*
-*          On exit, if INFO = 0, the (symmetric) inverse of the original
-*          matrix.  If UPLO = 'U', the upper triangular part of the
-*          inverse is formed and the part of A below the diagonal is not
-*          referenced; if UPLO = 'L' the lower triangular part of the
-*          inverse is formed and the part of A above the diagonal is
-*          not referenced.
-*
-*  LDA     (input) INTEGER
-*          The leading dimension of the array A.  LDA >= max(1,N).
-*
-*  IPIV    (input) INTEGER array, dimension (N)
-*          Details of the interchanges and the NNB structure of D
-*          as determined by ZSYTRF.
-*
-*  WORK    (workspace) DOUBLE COMPLEX array, dimension (N+NNB+1,NNB+3)
-*
-*  NB      (input) INTEGER
-*          Block size
-*
-*  INFO    (output) INTEGER
-*          = 0: successful exit
-*          < 0: if INFO = -i, the i-th argument had an illegal value
-*          > 0: if INFO = i, D(i,i) = 0; the matrix is singular and its
-*               inverse could not be computed.
 *
 *  =====================================================================
 *
 *     .. Parameters ..
-      DOUBLE COMPLEX     ONE, ZERO
+      COMPLEX*16         ONE, ZERO
       PARAMETER          ( ONE = ( 1.0D+0, 0.0D+0 ),
      $                   ZERO = ( 0.0D+0, 0.0D+0 ) )
 *     ..
@@ -77,9 +147,9 @@
       INTEGER            COUNT
       INTEGER            J, U11, INVD
 
-      DOUBLE COMPLEX     AK, AKKP1, AKP1, D, T
-      DOUBLE COMPLEX     U01_I_J, U01_IP1_J
-      DOUBLE COMPLEX     U11_I_J, U11_IP1_J
+      COMPLEX*16         AK, AKKP1, AKP1, D, T
+      COMPLEX*16         U01_I_J, U01_IP1_J
+      COMPLEX*16         U11_I_J, U11_IP1_J
 *     ..
 *     .. External Functions ..
       LOGICAL            LSAME
@@ -154,7 +224,7 @@
 
       IF( UPPER ) THEN
 *
-*        invA = P * inv(U')*inv(D)*inv(U)*P'.
+*        invA = P * inv(U**T)*inv(D)*inv(U)*P**T.
 *
         CALL ZTRTRI( UPLO, 'U', N, A, LDA, INFO )
 *
@@ -182,9 +252,9 @@
          END IF
         END DO
 *
-*       inv(U') = (inv(U))'
+*       inv(U**T) = (inv(U))**T
 *
-*       inv(U')*inv(D)*inv(U)
+*       inv(U**T)*inv(D)*inv(U)
 *
         CUT=N
         DO WHILE (CUT .GT. 0)
@@ -267,17 +337,23 @@
              END IF
            END DO
 *    
-*       U11T*invD1*U11->U11
+*       U11**T*invD1*U11->U11
 *
         CALL ZTRMM('L','U','T','U',NNB, NNB,
      $             ONE,A(CUT+1,CUT+1),LDA,WORK(U11+1,1),N+NB+1)
 *
-*          U01'invD*U01->A(CUT+I,CUT+J)
+         DO I=1,NNB
+            DO J=I,NNB
+              A(CUT+I,CUT+J)=WORK(U11+I,J)
+            END DO
+         END DO         
+*
+*          U01**T*invD*U01->A(CUT+I,CUT+J)
 *
          CALL ZGEMM('T','N',NNB,NNB,CUT,ONE,A(1,CUT+1),LDA,
-     $              WORK,N+NB+1, ZERO, A(CUT+1,CUT+1), LDA)
+     $              WORK,N+NB+1, ZERO, WORK(U11+1,1), N+NB+1)
 *
-*        U11 =  U11T*invD1*U11 + U01'invD*U01
+*        U11 =  U11**T*invD1*U11 + U01**T*invD*U01
 *
          DO I=1,NNB
             DO J=I,NNB
@@ -285,7 +361,7 @@
             END DO
          END DO
 *
-*        U01 =  U00T*invD0*U01
+*        U01 =  U00**T*invD0*U01
 *
          CALL ZTRMM('L',UPLO,'T','U',CUT, NNB,
      $             ONE,A,LDA,WORK,N+NB+1)
@@ -303,21 +379,21 @@
 *
        END DO
 *
-*        Apply PERMUTATIONS P and P': P * inv(U')*inv(D)*inv(U) *P'
+*        Apply PERMUTATIONS P and P**T: P * inv(U**T)*inv(D)*inv(U) *P**T
 *  
             I=1
             DO WHILE ( I .LE. N )
                IF( IPIV(I) .GT. 0 ) THEN
                   IP=IPIV(I)
-                 IF (I .LT. IP) CALL ZSYSWAPR( UPLO, N, A, I ,IP )
-                 IF (I .GT. IP) CALL ZSYSWAPR( UPLO, N, A, IP ,I )
+                 IF (I .LT. IP) CALL ZSYSWAPR( UPLO, N, A, LDA, I ,IP )
+                 IF (I .GT. IP) CALL ZSYSWAPR( UPLO, N, A, LDA, IP ,I )
                ELSE
                  IP=-IPIV(I)
                  I=I+1
                  IF ( (I-1) .LT. IP) 
-     $                  CALL ZSYSWAPR( UPLO, N, A, I-1 ,IP )
+     $                  CALL ZSYSWAPR( UPLO, N, A, LDA, I-1 ,IP )
                  IF ( (I-1) .GT. IP) 
-     $                  CALL ZSYSWAPR( UPLO, N, A, IP ,I-1 )
+     $                  CALL ZSYSWAPR( UPLO, N, A, LDA, IP ,I-1 )
               ENDIF
                I=I+1
             END DO
@@ -325,7 +401,7 @@
 *
 *        LOWER...
 *
-*        invA = P * inv(U')*inv(D)*inv(U)*P'.
+*        invA = P * inv(U**T)*inv(D)*inv(U)*P**T.
 *
          CALL ZTRTRI( UPLO, 'U', N, A, LDA, INFO )
 *
@@ -353,9 +429,9 @@
          END IF
         END DO
 *
-*       inv(U') = (inv(U))'
+*       inv(U**T) = (inv(U))**T
 *
-*       inv(U')*inv(D)*inv(U)
+*       inv(U**T)*inv(D)*inv(U)
 *
         CUT=0
         DO WHILE (CUT .LT. N)
@@ -432,20 +508,27 @@
              END IF
            END DO
 *    
-*       L11T*invD1*L11->L11
+*       L11**T*invD1*L11->L11
 *
         CALL ZTRMM('L',UPLO,'T','U',NNB, NNB,
      $             ONE,A(CUT+1,CUT+1),LDA,WORK(U11+1,1),N+NB+1)
+*
+         DO I=1,NNB
+            DO J=1,I
+              A(CUT+I,CUT+J)=WORK(U11+I,J)
+            END DO
+         END DO
+*
 
         IF ( (CUT+NNB) .LT. N ) THEN
 *
-*          L21T*invD2*L21->A(CUT+I,CUT+J)
+*          L21**T*invD2*L21->A(CUT+I,CUT+J)
 *
          CALL ZGEMM('T','N',NNB,NNB,N-NNB-CUT,ONE,A(CUT+NNB+1,CUT+1)
-     $             ,LDA,WORK,N+NB+1, ZERO, A(CUT+1,CUT+1), LDA)
+     $             ,LDA,WORK,N+NB+1, ZERO, WORK(U11+1,1), N+NB+1)
        
 *
-*        L11 =  L11T*invD1*L11 + U01'invD*U01
+*        L11 =  L11**T*invD1*L11 + U01**T*invD*U01
 *
          DO I=1,NNB
             DO J=1,I
@@ -453,7 +536,7 @@
             END DO
          END DO
 *
-*        U01 =  L22T*invD2*L21
+*        U01 =  L22**T*invD2*L21
 *
          CALL ZTRMM('L',UPLO,'T','U', N-NNB-CUT, NNB,
      $             ONE,A(CUT+NNB+1,CUT+NNB+1),LDA,WORK,N+NB+1)
@@ -466,7 +549,7 @@
          END DO
        ELSE
 *
-*        L11 =  L11T*invD1*L11
+*        L11 =  L11**T*invD1*L11
 *
          DO I=1,NNB
             DO J=1,I
@@ -480,18 +563,18 @@
            CUT=CUT+NNB
        END DO
 *
-*        Apply PERMUTATIONS P and P': P * inv(U')*inv(D)*inv(U) *P'
+*        Apply PERMUTATIONS P and P**T: P * inv(U**T)*inv(D)*inv(U) *P**T
 * 
             I=N
             DO WHILE ( I .GE. 1 )
                IF( IPIV(I) .GT. 0 ) THEN
                   IP=IPIV(I)
-                 IF (I .LT. IP) CALL ZSYSWAPR( UPLO, N, A, I ,IP  )
-                 IF (I .GT. IP) CALL ZSYSWAPR( UPLO, N, A, IP ,I )
+                 IF (I .LT. IP) CALL ZSYSWAPR( UPLO, N, A, LDA, I ,IP  )
+                 IF (I .GT. IP) CALL ZSYSWAPR( UPLO, N, A, LDA, IP ,I )
                ELSE
                  IP=-IPIV(I)
-                 IF ( I .LT. IP) CALL ZSYSWAPR( UPLO, N, A, I ,IP )
-                 IF ( I .GT. IP) CALL ZSYSWAPR(  UPLO, N, A, IP ,I )
+                 IF ( I .LT. IP) CALL ZSYSWAPR( UPLO, N, A, LDA, I ,IP )
+                 IF ( I .GT. IP) CALL ZSYSWAPR( UPLO, N, A, LDA, IP ,I )
                  I=I-1
                ENDIF
                I=I-1

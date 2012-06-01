@@ -1,10 +1,163 @@
+*> \brief \b CDRVHE
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE CDRVHE( DOTYPE, NN, NVAL, NRHS, THRESH, TSTERR, NMAX,
+*                          A, AFAC, AINV, B, X, XACT, WORK, RWORK, IWORK,
+*                          NOUT )
+* 
+*       .. Scalar Arguments ..
+*       LOGICAL            TSTERR
+*       INTEGER            NMAX, NN, NOUT, NRHS
+*       REAL               THRESH
+*       ..
+*       .. Array Arguments ..
+*       LOGICAL            DOTYPE( * )
+*       INTEGER            IWORK( * ), NVAL( * )
+*       REAL               RWORK( * )
+*       COMPLEX            A( * ), AFAC( * ), AINV( * ), B( * ),
+*      $                   WORK( * ), X( * ), XACT( * )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> CDRVHE tests the driver routines CHESV and -SVX.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] DOTYPE
+*> \verbatim
+*>          DOTYPE is LOGICAL array, dimension (NTYPES)
+*>          The matrix types to be used for testing.  Matrices of type j
+*>          (for 1 <= j <= NTYPES) are used for testing if DOTYPE(j) =
+*>          .TRUE.; if DOTYPE(j) = .FALSE., then type j is not used.
+*> \endverbatim
+*>
+*> \param[in] NN
+*> \verbatim
+*>          NN is INTEGER
+*>          The number of values of N contained in the vector NVAL.
+*> \endverbatim
+*>
+*> \param[in] NVAL
+*> \verbatim
+*>          NVAL is INTEGER array, dimension (NN)
+*>          The values of the matrix dimension N.
+*> \endverbatim
+*>
+*> \param[in] NRHS
+*> \verbatim
+*>          NRHS is INTEGER
+*>          The number of right hand side vectors to be generated for
+*>          each linear system.
+*> \endverbatim
+*>
+*> \param[in] THRESH
+*> \verbatim
+*>          THRESH is REAL
+*>          The threshold value for the test ratios.  A result is
+*>          included in the output file if RESULT >= THRESH.  To have
+*>          every test ratio printed, use THRESH = 0.
+*> \endverbatim
+*>
+*> \param[in] TSTERR
+*> \verbatim
+*>          TSTERR is LOGICAL
+*>          Flag that indicates whether error exits are to be tested.
+*> \endverbatim
+*>
+*> \param[in] NMAX
+*> \verbatim
+*>          NMAX is INTEGER
+*>          The maximum value permitted for N, used in dimensioning the
+*>          work arrays.
+*> \endverbatim
+*>
+*> \param[out] A
+*> \verbatim
+*>          A is COMPLEX array, dimension (NMAX*NMAX)
+*> \endverbatim
+*>
+*> \param[out] AFAC
+*> \verbatim
+*>          AFAC is COMPLEX array, dimension (NMAX*NMAX)
+*> \endverbatim
+*>
+*> \param[out] AINV
+*> \verbatim
+*>          AINV is COMPLEX array, dimension (NMAX*NMAX)
+*> \endverbatim
+*>
+*> \param[out] B
+*> \verbatim
+*>          B is COMPLEX array, dimension (NMAX*NRHS)
+*> \endverbatim
+*>
+*> \param[out] X
+*> \verbatim
+*>          X is COMPLEX array, dimension (NMAX*NRHS)
+*> \endverbatim
+*>
+*> \param[out] XACT
+*> \verbatim
+*>          XACT is COMPLEX array, dimension (NMAX*NRHS)
+*> \endverbatim
+*>
+*> \param[out] WORK
+*> \verbatim
+*>          WORK is COMPLEX array, dimension
+*>                      (NMAX*max(2,NRHS))
+*> \endverbatim
+*>
+*> \param[out] RWORK
+*> \verbatim
+*>          RWORK is REAL array, dimension (NMAX+2*NRHS)
+*> \endverbatim
+*>
+*> \param[out] IWORK
+*> \verbatim
+*>          IWORK is INTEGER array, dimension (NMAX)
+*> \endverbatim
+*>
+*> \param[in] NOUT
+*> \verbatim
+*>          NOUT is INTEGER
+*>          The unit number for output.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complex_lin
+*
+*  =====================================================================
       SUBROUTINE CDRVHE( DOTYPE, NN, NVAL, NRHS, THRESH, TSTERR, NMAX,
      $                   A, AFAC, AINV, B, X, XACT, WORK, RWORK, IWORK,
      $                   NOUT )
 *
-*  -- LAPACK test routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -18,63 +171,6 @@
       COMPLEX            A( * ), AFAC( * ), AINV( * ), B( * ),
      $                   WORK( * ), X( * ), XACT( * )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  CDRVHE tests the driver routines CHESV and -SVX.
-*
-*  Arguments
-*  =========
-*
-*  DOTYPE  (input) LOGICAL array, dimension (NTYPES)
-*          The matrix types to be used for testing.  Matrices of type j
-*          (for 1 <= j <= NTYPES) are used for testing if DOTYPE(j) =
-*          .TRUE.; if DOTYPE(j) = .FALSE., then type j is not used.
-*
-*  NN      (input) INTEGER
-*          The number of values of N contained in the vector NVAL.
-*
-*  NVAL    (input) INTEGER array, dimension (NN)
-*          The values of the matrix dimension N.
-*
-*  NRHS    (input) INTEGER
-*          The number of right hand side vectors to be generated for
-*          each linear system.
-*
-*  THRESH  (input) REAL
-*          The threshold value for the test ratios.  A result is
-*          included in the output file if RESULT >= THRESH.  To have
-*          every test ratio printed, use THRESH = 0.
-*
-*  TSTERR  (input) LOGICAL
-*          Flag that indicates whether error exits are to be tested.
-*
-*  NMAX    (input) INTEGER
-*          The maximum value permitted for N, used in dimensioning the
-*          work arrays.
-*
-*  A       (workspace) COMPLEX array, dimension (NMAX*NMAX)
-*
-*  AFAC    (workspace) COMPLEX array, dimension (NMAX*NMAX)
-*
-*  AINV    (workspace) COMPLEX array, dimension (NMAX*NMAX)
-*
-*  B       (workspace) COMPLEX array, dimension (NMAX*NRHS)
-*
-*  X       (workspace) COMPLEX array, dimension (NMAX*NRHS)
-*
-*  XACT    (workspace) COMPLEX array, dimension (NMAX*NRHS)
-*
-*  WORK    (workspace) COMPLEX array, dimension
-*                      (NMAX*max(2,NRHS))
-*
-*  RWORK   (workspace) REAL array, dimension (NMAX+2*NRHS)
-*
-*  IWORK   (workspace) INTEGER array, dimension (NMAX)
-*
-*  NOUT    (input) INTEGER
-*          The unit number for output.
 *
 *  =====================================================================
 *
@@ -106,9 +202,9 @@
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           ALADHD, ALAERH, ALASVM, CERRVX, CGET04, CHESV,
-     $                   CHESVX, CHET01, CHETRF, CHETRI, CLACPY, CLAIPD,
-     $                   CLARHS, CLASET, CLATB4, CLATMS, CPOT02, CPOT05,
-     $                   XLAENV
+     $                   CHESVX, CHET01, CHETRF, CHETRI2, CLACPY,
+     $                   CLAIPD, CLARHS, CLASET, CLATB4, CLATMS, CPOT02,
+     $                   CPOT05, XLAENV
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
@@ -300,8 +396,9 @@
 *                    Compute inv(A) and take its norm.
 *
                      CALL CLACPY( UPLO, N, N, AFAC, LDA, AINV, LDA )
-                     CALL CHETRI( UPLO, N, AINV, LDA, IWORK, WORK,
-     $                            INFO )
+                     LWORK = (N+NB+1)*(NB+3)
+                     CALL CHETRI2( UPLO, N, AINV, LDA, IWORK, WORK,
+     $                            LWORK, INFO )
                      AINVNM = CLANHE( '1', UPLO, N, AINV, LDA, RWORK )
 *
 *                    Compute the 1-norm condition number of A.

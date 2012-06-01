@@ -3,24 +3,30 @@ include ../make.inc
 #######################################################################
 #  This is the makefile to create a library for LAPACK.
 #  The files are organized as follows:
-#       ALLAUX -- Auxiliary routines called from all precisions
-#       ALLXAUX -- Auxiliary routines called from all precisions but
-#                  only from routines using extra precision.
-#       SCLAUX -- Auxiliary routines called from both REAL and COMPLEX
-#       DZLAUX -- Auxiliary routines called from both DOUBLE PRECISION
-#                 and COMPLEX*16
-#       SLASRC -- Single precision real LAPACK routines
+#       ALLAUX  -- Auxiliary routines called from all precisions
+#
+#       SCLAUX  -- Auxiliary routines called from both REAL and COMPLEX.
+#       DZLAUX  -- Auxiliary routines called from both DOUBLE and COMPLEX*16.
+#
+#       DSLASRC -- Double-single mixed precision real routines called from
+#                  single, single-extra and double precision real LAPACK
+#                  routines (i.e. from SLASRC, SXLASRC, DLASRC).
+#       ZCLASRC -- Double-single mixed precision complex routines called from
+#                  single, single-extra and double precision complex LAPACK
+#                  routines (i.e. from CLASRC, CXLASRC, ZLASRC).
+#
+#       SLASRC  -- Single precision real LAPACK routines
 #       SXLASRC -- Single precision real LAPACK routines using extra
 #                  precision.
-#       CLASRC -- Single precision complex LAPACK routines
+#       CLASRC  -- Single precision complex LAPACK routines
 #       CXLASRC -- Single precision complex LAPACK routines using extra
 #                  precision.
-#       DLASRC -- Double precision real LAPACK routines
+#       DLASRC  -- Double precision real LAPACK routines
 #       DXLASRC -- Double precision real LAPACK routines using extra
 #                  precision.
-#       ZLASRC -- Double precision complex LAPACK routines
+#       ZLASRC  -- Double precision complex LAPACK routines
 #       ZXLASRC -- Double precision complex LAPACK routines using extra
-#                  precision.
+#                  precision.   
 #
 #  The library can be set up to include routines for any combination
 #  of the four precisions.  To create or add to the library, enter make
@@ -51,8 +57,6 @@ include ../make.inc
 ALLAUX = ilaenv.o ieeeck.o lsamen.o xerbla.o xerbla_array.o iparmq.o	\
     ilaprec.o ilatrans.o ilauplo.o iladiag.o chla_transtype.o \
     ../INSTALL/ilaver.o ../INSTALL/lsame.o ../INSTALL/slamch.o
-
-ALLXAUX =
 
 SCLAUX = \
    sbdsdc.o \
@@ -123,7 +127,7 @@ SLASRC = \
    sormr3.o sormrq.o sormrz.o sormtr.o spbcon.o spbequ.o spbrfs.o \
    spbstf.o spbsv.o  spbsvx.o \
    spbtf2.o spbtrf.o spbtrs.o spocon.o spoequ.o sporfs.o sposv.o  \
-   sposvx.o spotf2.o spotrf.o spotri.o  spstrf.o spstf2.o \
+   sposvx.o spotf2.o  spotri.o  spstrf.o spstf2.o \
    sppcon.o sppequ.o \
    spprfs.o sppsv.o  sppsvx.o spptrf.o spptri.o spptrs.o sptcon.o \
    spteqr.o sptrfs.o sptsv.o  sptsvx.o spttrs.o sptts2.o srscl.o  \
@@ -144,17 +148,21 @@ SLASRC = \
    stfttr.o stpttf.o stpttr.o strttf.o strttp.o \
    sgejsv.o  sgesvj.o  sgsvj0.o  sgsvj1.o \
    sgeequb.o ssyequb.o spoequb.o sgbequb.o \
-   sbbcsd.o slapmr.o sorbdb.o sorcsd.o
+   sbbcsd.o slapmr.o sorbdb.o sorcsd.o \
+   sgeqrt.o sgeqrt2.o sgeqrt3.o sgemqrt.o \
+   stpqrt.o stpqrt2.o stpmqrt.o stprfb.o
 
 DSLASRC = spotrs.o sgetrs.o spotrf.o sgetrf.o 
 
+ifdef USEXBLAS
 SXLASRC = sgesvxx.o sgerfsx.o sla_gerfsx_extended.o sla_geamv.o		\
-   sla_gercond.o sla_rpvgrw.o ssysvxx.o ssyrfsx.o			\
+   sla_gercond.o sla_gerpvgrw.o ssysvxx.o ssyrfsx.o			\
    sla_syrfsx_extended.o sla_syamv.o sla_syrcond.o sla_syrpvgrw.o	\
    sposvxx.o sporfsx.o sla_porfsx_extended.o sla_porcond.o		\
    sla_porpvgrw.o sgbsvxx.o sgbrfsx.o sla_gbrfsx_extended.o		\
    sla_gbamv.o sla_gbrcond.o sla_gbrpvgrw.o sla_lin_berr.o slarscl2.o	\
    slascl2.o sla_wwaddw.o
+endif
 
 CLASRC = \
    cbdsqr.o cgbbrd.o cgbcon.o cgbequ.o cgbrfs.o cgbsv.o  cgbsvx.o \
@@ -164,7 +172,7 @@ CLASRC = \
    cgels.o  cgelsd.o cgelss.o cgelsx.o cgelsy.o cgeql2.o cgeqlf.o cgeqp3.o \
    cgeqpf.o cgeqr2.o cgeqr2p.o cgeqrf.o cgeqrfp.o cgerfs.o \
    cgerq2.o cgerqf.o cgesc2.o cgesdd.o cgesv.o  cgesvd.o  \
-   cgesvx.o cgetc2.o cgetf2.o cgetrf.o cgetri.o cgetrs.o \
+   cgesvx.o cgetc2.o cgetf2.o cgetri.o \
    cggbak.o cggbal.o cgges.o  cggesx.o cggev.o  cggevx.o cggglm.o \
    cgghrd.o cgglse.o cggqrf.o cggrqf.o \
    cggsvd.o cggsvp.o \
@@ -173,7 +181,8 @@ CLASRC = \
    checon.o cheev.o  cheevd.o cheevr.o cheevx.o chegs2.o chegst.o \
    chegv.o  chegvd.o chegvx.o cherfs.o chesv.o  chesvx.o chetd2.o \
    chetf2.o chetrd.o \
-   chetrf.o chetri.o chetrs.o chetrs2.o chgeqz.o chpcon.o chpev.o  chpevd.o \
+   chetrf.o chetri.o chetri2.o chetri2x.o cheswapr.o \
+   chetrs.o chetrs2.o chgeqz.o chpcon.o chpev.o  chpevd.o \
    chpevx.o chpgst.o chpgv.o  chpgvd.o chpgvx.o chprfs.o chpsv.o  \
    chpsvx.o \
    chptrd.o chptrf.o chptri.o chptrs.o chsein.o chseqr.o clabrd.o \
@@ -194,7 +203,7 @@ CLASRC = \
    claswp.o clasyf.o clatbs.o clatdf.o clatps.o clatrd.o clatrs.o clatrz.o \
    clatzm.o clauu2.o clauum.o cpbcon.o cpbequ.o cpbrfs.o cpbstf.o cpbsv.o  \
    cpbsvx.o cpbtf2.o cpbtrf.o cpbtrs.o cpocon.o cpoequ.o cporfs.o \
-   cposv.o  cposvx.o cpotf2.o cpotrf.o cpotri.o cpotrs.o cpstrf.o cpstf2.o \
+   cposv.o  cposvx.o cpotf2.o cpotri.o cpstrf.o cpstf2.o \
    cppcon.o cppequ.o cpprfs.o cppsv.o  cppsvx.o cpptrf.o cpptri.o cpptrs.o \
    cptcon.o cpteqr.o cptrfs.o cptsv.o  cptsvx.o cpttrf.o cpttrs.o cptts2.o \
    crot.o   cspcon.o cspmv.o  cspr.o   csprfs.o cspsv.o  \
@@ -213,10 +222,13 @@ CLASRC = \
    chfrk.o ctfttp.o clanhf.o cpftrf.o cpftri.o cpftrs.o ctfsm.o ctftri.o \
    ctfttr.o ctpttf.o ctpttr.o ctrttf.o ctrttp.o \
    cgeequb.o cgbequb.o csyequb.o cpoequb.o cheequb.o \
-   cbbcsd.o clapmr.o cunbdb.o cuncsd.o
+   cbbcsd.o clapmr.o cunbdb.o cuncsd.o \
+   cgeqrt.o cgeqrt2.o cgeqrt3.o cgemqrt.o \
+   ctpqrt.o ctpqrt2.o ctpmqrt.o ctprfb.o
 
-CXLASRC =    cgesvxx.o cgerfsx.o cla_gerfsx_extended.o cla_geamv.o \
-   cla_gercond_c.o cla_gercond_x.o cla_rpvgrw.o \
+ifdef USEXBLAS
+CXLASRC = cgesvxx.o cgerfsx.o cla_gerfsx_extended.o cla_geamv.o \
+   cla_gercond_c.o cla_gercond_x.o cla_gerpvgrw.o \
    csysvxx.o csyrfsx.o cla_syrfsx_extended.o cla_syamv.o \
    cla_syrcond_c.o cla_syrcond_x.o cla_syrpvgrw.o \
    cposvxx.o cporfsx.o cla_porfsx_extended.o \
@@ -226,6 +238,7 @@ CXLASRC =    cgesvxx.o cgerfsx.o cla_gerfsx_extended.o cla_geamv.o \
    chesvxx.o cherfsx.o cla_herfsx_extended.o cla_heamv.o \
    cla_hercond_c.o cla_hercond_x.o cla_herpvgrw.o \
    cla_lin_berr.o clarscl2.o clascl2.o cla_wwaddw.o
+endif
 
 ZCLASRC = cpotrs.o cgetrs.o cpotrf.o cgetrf.o 
 
@@ -285,15 +298,19 @@ DLASRC = \
    dtfttr.o dtpttf.o dtpttr.o dtrttf.o dtrttp.o \
    dgejsv.o  dgesvj.o  dgsvj0.o  dgsvj1.o \
    dgeequb.o dsyequb.o dpoequb.o dgbequb.o \
-   dbbcsd.o dlapmr.o dorbdb.o dorcsd.o
+   dbbcsd.o dlapmr.o dorbdb.o dorcsd.o \
+   dgeqrt.o dgeqrt2.o dgeqrt3.o dgemqrt.o \
+   dtpqrt.o dtpqrt2.o dtpmqrt.o dtprfb.o
 
+ifdef USEXBLAS
 DXLASRC = dgesvxx.o dgerfsx.o dla_gerfsx_extended.o dla_geamv.o		\
-   dla_gercond.o dla_rpvgrw.o dsysvxx.o dsyrfsx.o			\
+   dla_gercond.o dla_gerpvgrw.o dsysvxx.o dsyrfsx.o			\
    dla_syrfsx_extended.o dla_syamv.o dla_syrcond.o dla_syrpvgrw.o	\
    dposvxx.o dporfsx.o dla_porfsx_extended.o dla_porcond.o		\
    dla_porpvgrw.o dgbsvxx.o dgbrfsx.o dla_gbrfsx_extended.o		\
    dla_gbamv.o dla_gbrcond.o dla_gbrpvgrw.o dla_lin_berr.o dlarscl2.o	\
    dlascl2.o dla_wwaddw.o
+endif
 
 ZLASRC = \
    zbdsqr.o zgbbrd.o zgbcon.o zgbequ.o zgbrfs.o zgbsv.o  zgbsvx.o \
@@ -312,7 +329,8 @@ ZLASRC = \
    zhecon.o zheev.o  zheevd.o zheevr.o zheevx.o zhegs2.o zhegst.o \
    zhegv.o  zhegvd.o zhegvx.o zherfs.o zhesv.o  zhesvx.o zhetd2.o \
    zhetf2.o zhetrd.o \
-   zhetrf.o zhetri.o zhetrs.o zhetrs2.o zhgeqz.o zhpcon.o zhpev.o  zhpevd.o \
+   zhetrf.o zhetri.o zhetri2.o zhetri2x.o zheswapr.o \
+   zhetrs.o zhetrs2.o zhgeqz.o zhpcon.o zhpev.o  zhpevd.o \
    zhpevx.o zhpgst.o zhpgv.o  zhpgvd.o zhpgvx.o zhprfs.o zhpsv.o  \
    zhpsvx.o \
    zhptrd.o zhptrf.o zhptri.o zhptrs.o zhsein.o zhseqr.o zlabrd.o \
@@ -357,10 +375,13 @@ ZLASRC = \
    zhfrk.o ztfttp.o zlanhf.o zpftrf.o zpftri.o zpftrs.o ztfsm.o ztftri.o \
    ztfttr.o ztpttf.o ztpttr.o ztrttf.o ztrttp.o \
    zgeequb.o zgbequb.o zsyequb.o zpoequb.o zheequb.o \
-   zbbcsd.o zlapmr.o zunbdb.o zuncsd.o
+   zbbcsd.o zlapmr.o zunbdb.o zuncsd.o \
+   zgeqrt.o zgeqrt2.o zgeqrt3.o zgemqrt.o \
+   ztpqrt.o ztpqrt2.o ztpmqrt.o ztprfb.o
 
+ifdef USEXBLAS
 ZXLASRC = zgesvxx.o zgerfsx.o zla_gerfsx_extended.o zla_geamv.o		\
-   zla_gercond_c.o zla_gercond_x.o zla_rpvgrw.o zsysvxx.o zsyrfsx.o	\
+   zla_gercond_c.o zla_gercond_x.o zla_gerpvgrw.o zsysvxx.o zsyrfsx.o	\
    zla_syrfsx_extended.o zla_syamv.o zla_syrcond_c.o zla_syrcond_x.o	\
    zla_syrpvgrw.o zposvxx.o zporfsx.o zla_porfsx_extended.o		\
    zla_porcond_c.o zla_porcond_x.o zla_porpvgrw.o zgbsvxx.o zgbrfsx.o	\
@@ -368,38 +389,39 @@ ZXLASRC = zgesvxx.o zgerfsx.o zla_gerfsx_extended.o zla_geamv.o		\
    zla_gbrpvgrw.o zhesvxx.o zherfsx.o zla_herfsx_extended.o		\
    zla_heamv.o zla_hercond_c.o zla_hercond_x.o zla_herpvgrw.o		\
    zla_lin_berr.o zlarscl2.o zlascl2.o zla_wwaddw.o
-
-all: ../$(LAPACKLIB)
-
-ifdef USEXBLAS
-ALLXOBJ=$(SXLASRC) $(DXLASRC) $(CXLASRC) $(ZXLASRC) $(ALLXAUX)
 endif
 
-ALLOBJ=$(SLASRC) $(DLASRC) $(DSLASRC) $(CLASRC) $(ZLASRC) $(ZCLASRC) \
-	   $(SCLAUX) $(DZLAUX) $(ALLAUX)
+ALLOBJ = $(SLASRC) $(DLASRC) $(DSLASRC) $(CLASRC) $(ZLASRC) $(ZCLASRC) \
+   $(SCLAUX) $(DZLAUX) $(ALLAUX)
+
+ifdef USEXBLAS
+ALLXOBJ = $(SXLASRC) $(DXLASRC) $(CXLASRC) $(ZXLASRC)
+endif
+
+all: ../$(LAPACKLIB)
 
 ../$(LAPACKLIB): $(ALLOBJ) $(ALLXOBJ)
 	$(ARCH) $(ARCHFLAGS) $@ $(ALLOBJ) $(ALLXOBJ)
 	$(RANLIB) $@
 
-single: $(SLASRC) $(ALLAUX) $(SCLAUX) 
-	$(ARCH) $(ARCHFLAGS) ../$(LAPACKLIB) $(SLASRC) $(ALLAUX) \
-	$(SCLAUX) $(DSLASRC)
+single: $(SLASRC) $(DSLASRC) $(SXLASRC) $(SCLAUX) $(ALLAUX)
+	$(ARCH) $(ARCHFLAGS) ../$(LAPACKLIB) $(SLASRC) $(DSLASRC) \
+	$(SXLASRC) $(SCLAUX) $(ALLAUX) $(ALLXAUX)
 	$(RANLIB) ../$(LAPACKLIB)
 
-complex: $(CLASRC) $(ALLAUX) $(SCLAUX)
-	$(ARCH) $(ARCHFLAGS) ../$(LAPACKLIB) $(CLASRC) $(ALLAUX) \
-	$(SCLAUX) $(ZCLASRC)
+complex: $(CLASRC) $(ZCLASRC) $(CXLASRC) $(SCLAUX) $(ALLAUX)
+	$(ARCH) $(ARCHFLAGS) ../$(LAPACKLIB) $(CLASRC) $(ZCLASRC) \
+	$(CXLASRC) $(SCLAUX) $(ALLAUX) $(ALLXAUX)
 	$(RANLIB) ../$(LAPACKLIB)
 
-double: $(DLASRC) $(ALLAUX) $(DZLAUX)
-	$(ARCH) $(ARCHFLAGS) ../$(LAPACKLIB) $(DLASRC) $(ALLAUX) \
-	$(DZLAUX) $(DSLASRC)
+double: $(DLASRC) $(DSLASRC) $(DXLASRC) $(DZLAUX) $(ALLAUX)
+	$(ARCH) $(ARCHFLAGS) ../$(LAPACKLIB) $(DLASRC) $(DSLASRC) \
+	$(DXLASRC) $(DZLAUX) $(ALLAUX) $(ALLXAUX)
 	$(RANLIB) ../$(LAPACKLIB)
 
-complex16: $(ZLASRC) $(ALLAUX) $(DZLAUX)
-	$(ARCH) $(ARCHFLAGS) ../$(LAPACKLIB) $(ZLASRC) $(ALLAUX) \
-	$(DZLAUX) $(ZCLASRC)
+complex16: $(ZLASRC) $(ZCLASRC) $(ZXLASRC) $(DZLAUX) $(ALLAUX)
+	$(ARCH) $(ARCHFLAGS) ../$(LAPACKLIB) $(ZLASRC) $(ZCLASRC) \
+	$(ZXLASRC) $(DZLAUX) $(ALLAUX) $(ALLXAUX)
 	$(RANLIB) ../$(LAPACKLIB)
 
 $(ALLAUX): $(FRC)
@@ -409,8 +431,9 @@ $(SLASRC): $(FRC)
 $(CLASRC): $(FRC)
 $(DLASRC): $(FRC)
 $(ZLASRC): $(FRC)
+$(ZCLASRC): $(FRC)
+$(DSLASRC): $(FRC)
 ifdef USEXBLAS
-$(ALLXAUX): $(FRC)
 $(SXLASRC): $(FRC)
 $(CXLASRC): $(FRC)
 $(DXLASRC): $(FRC)

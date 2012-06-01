@@ -1,13 +1,136 @@
+*> \brief \b CHETRS2
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*> \htmlonly
+*> Download CHETRS2 + dependencies 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/chetrs2.f"> 
+*> [TGZ]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/chetrs2.f"> 
+*> [ZIP]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/chetrs2.f"> 
+*> [TXT]</a>
+*> \endhtmlonly 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE CHETRS2( UPLO, N, NRHS, A, LDA, IPIV, B, LDB, 
+*                           WORK, INFO )
+* 
+*       .. Scalar Arguments ..
+*       CHARACTER          UPLO
+*       INTEGER            INFO, LDA, LDB, N, NRHS
+*       ..
+*       .. Array Arguments ..
+*       INTEGER            IPIV( * )
+*       COMPLEX            A( LDA, * ), B( LDB, * ), WORK( * )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> CHETRS2 solves a system of linear equations A*X = B with a complex
+*> Hermitian matrix A using the factorization A = U*D*U**H or
+*> A = L*D*L**H computed by CHETRF and converted by CSYCONV.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] UPLO
+*> \verbatim
+*>          UPLO is CHARACTER*1
+*>          Specifies whether the details of the factorization are stored
+*>          as an upper or lower triangular matrix.
+*>          = 'U':  Upper triangular, form is A = U*D*U**H;
+*>          = 'L':  Lower triangular, form is A = L*D*L**H.
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The order of the matrix A.  N >= 0.
+*> \endverbatim
+*>
+*> \param[in] NRHS
+*> \verbatim
+*>          NRHS is INTEGER
+*>          The number of right hand sides, i.e., the number of columns
+*>          of the matrix B.  NRHS >= 0.
+*> \endverbatim
+*>
+*> \param[in] A
+*> \verbatim
+*>          A is COMPLEX array, dimension (LDA,N)
+*>          The block diagonal matrix D and the multipliers used to
+*>          obtain the factor U or L as computed by CHETRF.
+*> \endverbatim
+*>
+*> \param[in] LDA
+*> \verbatim
+*>          LDA is INTEGER
+*>          The leading dimension of the array A.  LDA >= max(1,N).
+*> \endverbatim
+*>
+*> \param[in] IPIV
+*> \verbatim
+*>          IPIV is INTEGER array, dimension (N)
+*>          Details of the interchanges and the block structure of D
+*>          as determined by CHETRF.
+*> \endverbatim
+*>
+*> \param[in,out] B
+*> \verbatim
+*>          B is COMPLEX array, dimension (LDB,NRHS)
+*>          On entry, the right hand side matrix B.
+*>          On exit, the solution matrix X.
+*> \endverbatim
+*>
+*> \param[in] LDB
+*> \verbatim
+*>          LDB is INTEGER
+*>          The leading dimension of the array B.  LDB >= max(1,N).
+*> \endverbatim
+*>
+*> \param[out] WORK
+*> \verbatim
+*>          WORK is COMPLEX array, dimension (N)
+*> \endverbatim
+*>
+*> \param[out] INFO
+*> \verbatim
+*>          INFO is INTEGER
+*>          = 0:  successful exit
+*>          < 0:  if INFO = -i, the i-th argument had an illegal value
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complexHEcomputational
+*
+*  =====================================================================
       SUBROUTINE CHETRS2( UPLO, N, NRHS, A, LDA, IPIV, B, LDB, 
      $                    WORK, INFO )
 *
-*  -- LAPACK PROTOTYPE routine (version 3.3.0) --
-*
-*  -- Written by Julie Langou of the Univ. of TN    --
-*     November 2010
-*
+*  -- LAPACK computational routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -17,53 +140,6 @@
       INTEGER            IPIV( * )
       COMPLEX            A( LDA, * ), B( LDB, * ), WORK( * )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  CHETRS2 solves a system of linear equations A*X = B with a COMPLEX
-*  Hermitian matrix A using the factorization A = U*D*U**T or
-*  A = L*D*L**T computed by CSYTRF and converted by CSYCONV.
-*
-*  Arguments
-*  =========
-*
-*  UPLO    (input) CHARACTER*1
-*          Specifies whether the details of the factorization are stored
-*          as an upper or lower triangular matrix.
-*          = 'U':  Upper triangular, form is A = U*D*U**H;
-*          = 'L':  Lower triangular, form is A = L*D*L**H.
-*
-*  N       (input) INTEGER
-*          The order of the matrix A.  N >= 0.
-*
-*  NRHS    (input) INTEGER
-*          The number of right hand sides, i.e., the number of columns
-*          of the matrix B.  NRHS >= 0.
-*
-*  A       (input) COMPLEX array, dimension (LDA,N)
-*          The block diagonal matrix D and the multipliers used to
-*          obtain the factor U or L as computed by CHETRF.
-*
-*  LDA     (input) INTEGER
-*          The leading dimension of the array A.  LDA >= max(1,N).
-*
-*  IPIV    (input) INTEGER array, dimension (N)
-*          Details of the interchanges and the block structure of D
-*          as determined by CHETRF.
-*
-*  B       (input/output) COMPLEX array, dimension (LDB,NRHS)
-*          On entry, the right hand side matrix B.
-*          On exit, the solution matrix X.
-*
-*  LDB     (input) INTEGER
-*          The leading dimension of the array B.  LDB >= max(1,N).
-*
-*  WORK    (workspace) COMPLEX array, dimension (N)
-*
-*  INFO    (output) INTEGER
-*          = 0:  successful exit
-*          < 0:  if INFO = -i, the i-th argument had an illegal value
 *
 *  =====================================================================
 *
@@ -118,9 +194,9 @@
 *
       IF( UPPER ) THEN
 *
-*        Solve A*X = B, where A = U*D*U'.
+*        Solve A*X = B, where A = U*D*U**H.
 *
-*       P' * B  
+*       P**T * B  
         K=N
         DO WHILE ( K .GE. 1 )
          IF( IPIV( K ).GT.0 ) THEN
@@ -140,11 +216,11 @@
          END IF
         END DO
 *
-*  Compute (U \P' * B) -> B    [ (U \P' * B) ]
+*  Compute (U \P**T * B) -> B    [ (U \P**T * B) ]
 *
-        CALL CTRSM('L','U','N','U',N,NRHS,ONE,A,N,B,N)
+        CALL CTRSM('L','U','N','U',N,NRHS,ONE,A,LDA,B,LDB)
 *
-*  Compute D \ B -> B   [ D \ (U \P' * B) ]
+*  Compute D \ B -> B   [ D \ (U \P**T * B) ]
 *       
          I=N
          DO WHILE ( I .GE. 1 )
@@ -169,11 +245,11 @@
             I = I - 1
          END DO
 *
-*      Compute (U' \ B) -> B   [ U' \ (D \ (U \P' * B) ) ]
+*      Compute (U**H \ B) -> B   [ U**H \ (D \ (U \P**T * B) ) ]
 *
-         CALL CTRSM('L','U','C','U',N,NRHS,ONE,A,N,B,N)
+         CALL CTRSM('L','U','C','U',N,NRHS,ONE,A,LDA,B,LDB)
 *
-*       P * B  [ P * (U' \ (D \ (U \P' * B) )) ]
+*       P * B  [ P * (U**H \ (D \ (U \P**T * B) )) ]
 *
         K=1
         DO WHILE ( K .LE. N )
@@ -196,9 +272,9 @@
 *
       ELSE
 *
-*        Solve A*X = B, where A = L*D*L'.
+*        Solve A*X = B, where A = L*D*L**H.
 *
-*       P' * B  
+*       P**T * B  
         K=1
         DO WHILE ( K .LE. N )
          IF( IPIV( K ).GT.0 ) THEN
@@ -218,11 +294,11 @@
          ENDIF
         END DO
 *
-*  Compute (L \P' * B) -> B    [ (L \P' * B) ]
+*  Compute (L \P**T * B) -> B    [ (L \P**T * B) ]
 *
-        CALL CTRSM('L','L','N','U',N,NRHS,ONE,A,N,B,N)
+        CALL CTRSM('L','L','N','U',N,NRHS,ONE,A,LDA,B,LDB)
 *
-*  Compute D \ B -> B   [ D \ (L \P' * B) ]
+*  Compute D \ B -> B   [ D \ (L \P**T * B) ]
 *       
          I=1
          DO WHILE ( I .LE. N )
@@ -245,11 +321,11 @@
             I = I + 1
          END DO
 *
-*  Compute (L' \ B) -> B   [ L' \ (D \ (L \P' * B) ) ]
+*  Compute (L**H \ B) -> B   [ L**H \ (D \ (L \P**T * B) ) ]
 * 
-        CALL CTRSM('L','L','C','U',N,NRHS,ONE,A,N,B,N)
+        CALL CTRSM('L','L','C','U',N,NRHS,ONE,A,LDA,B,LDB)
 *
-*       P * B  [ P * (L' \ (D \ (L \P' * B) )) ]
+*       P * B  [ P * (L**H \ (D \ (L \P**T * B) )) ]
 *
         K=N
         DO WHILE ( K .GE. 1 )

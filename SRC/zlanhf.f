@@ -1,12 +1,255 @@
+*> \brief \b ZLANHF
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*> \htmlonly
+*> Download ZLANHF + dependencies 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/zlanhf.f"> 
+*> [TGZ]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/zlanhf.f"> 
+*> [ZIP]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/zlanhf.f"> 
+*> [TXT]</a>
+*> \endhtmlonly 
+*
+*  Definition:
+*  ===========
+*
+*       DOUBLE PRECISION FUNCTION ZLANHF( NORM, TRANSR, UPLO, N, A, WORK )
+* 
+*       .. Scalar Arguments ..
+*       CHARACTER          NORM, TRANSR, UPLO
+*       INTEGER            N
+*       ..
+*       .. Array Arguments ..
+*       DOUBLE PRECISION   WORK( 0: * )
+*       COMPLEX*16         A( 0: * )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> ZLANHF  returns the value of the one norm,  or the Frobenius norm, or
+*> the  infinity norm,  or the  element of  largest absolute value  of a
+*> complex Hermitian matrix A in RFP format.
+*> \endverbatim
+*>
+*> \return ZLANHF
+*> \verbatim
+*>
+*>    ZLANHF = ( max(abs(A(i,j))), NORM = 'M' or 'm'
+*>             (
+*>             ( norm1(A),         NORM = '1', 'O' or 'o'
+*>             (
+*>             ( normI(A),         NORM = 'I' or 'i'
+*>             (
+*>             ( normF(A),         NORM = 'F', 'f', 'E' or 'e'
+*>
+*> where  norm1  denotes the  one norm of a matrix (maximum column sum),
+*> normI  denotes the  infinity norm  of a matrix  (maximum row sum) and
+*> normF  denotes the  Frobenius norm of a matrix (square root of sum of
+*> squares).  Note that  max(abs(A(i,j)))  is not a  matrix norm.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] NORM
+*> \verbatim
+*>          NORM is CHARACTER
+*>            Specifies the value to be returned in ZLANHF as described
+*>            above.
+*> \endverbatim
+*>
+*> \param[in] TRANSR
+*> \verbatim
+*>          TRANSR is CHARACTER
+*>            Specifies whether the RFP format of A is normal or
+*>            conjugate-transposed format.
+*>            = 'N':  RFP format is Normal
+*>            = 'C':  RFP format is Conjugate-transposed
+*> \endverbatim
+*>
+*> \param[in] UPLO
+*> \verbatim
+*>          UPLO is CHARACTER
+*>            On entry, UPLO specifies whether the RFP matrix A came from
+*>            an upper or lower triangular matrix as follows:
+*>
+*>            UPLO = 'U' or 'u' RFP A came from an upper triangular
+*>            matrix
+*>
+*>            UPLO = 'L' or 'l' RFP A came from a  lower triangular
+*>            matrix
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>            The order of the matrix A.  N >= 0.  When N = 0, ZLANHF is
+*>            set to zero.
+*> \endverbatim
+*>
+*> \param[in] A
+*> \verbatim
+*>          A is COMPLEX*16 array, dimension ( N*(N+1)/2 );
+*>            On entry, the matrix A in RFP Format.
+*>            RFP Format is described by TRANSR, UPLO and N as follows:
+*>            If TRANSR='N' then RFP A is (0:N,0:K-1) when N is even;
+*>            K=N/2. RFP A is (0:N-1,0:K) when N is odd; K=N/2. If
+*>            TRANSR = 'C' then RFP is the Conjugate-transpose of RFP A
+*>            as defined when TRANSR = 'N'. The contents of RFP A are
+*>            defined by UPLO as follows: If UPLO = 'U' the RFP A
+*>            contains the ( N*(N+1)/2 ) elements of upper packed A
+*>            either in normal or conjugate-transpose Format. If
+*>            UPLO = 'L' the RFP A contains the ( N*(N+1) /2 ) elements
+*>            of lower packed A either in normal or conjugate-transpose
+*>            Format. The LDA of RFP A is (N+1)/2 when TRANSR = 'C'. When
+*>            TRANSR is 'N' the LDA is N+1 when N is even and is N when
+*>            is odd. See the Note below for more details.
+*>            Unchanged on exit.
+*> \endverbatim
+*>
+*> \param[out] WORK
+*> \verbatim
+*>          WORK is DOUBLE PRECISION array, dimension (LWORK),
+*>            where LWORK >= N when NORM = 'I' or '1' or 'O'; otherwise,
+*>            WORK is not referenced.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complex16OTHERcomputational
+*
+*> \par Further Details:
+*  =====================
+*>
+*> \verbatim
+*>
+*>  We first consider Standard Packed Format when N is even.
+*>  We give an example where N = 6.
+*>
+*>      AP is Upper             AP is Lower
+*>
+*>   00 01 02 03 04 05       00
+*>      11 12 13 14 15       10 11
+*>         22 23 24 25       20 21 22
+*>            33 34 35       30 31 32 33
+*>               44 45       40 41 42 43 44
+*>                  55       50 51 52 53 54 55
+*>
+*>
+*>  Let TRANSR = 'N'. RFP holds AP as follows:
+*>  For UPLO = 'U' the upper trapezoid A(0:5,0:2) consists of the last
+*>  three columns of AP upper. The lower triangle A(4:6,0:2) consists of
+*>  conjugate-transpose of the first three columns of AP upper.
+*>  For UPLO = 'L' the lower trapezoid A(1:6,0:2) consists of the first
+*>  three columns of AP lower. The upper triangle A(0:2,0:2) consists of
+*>  conjugate-transpose of the last three columns of AP lower.
+*>  To denote conjugate we place -- above the element. This covers the
+*>  case N even and TRANSR = 'N'.
+*>
+*>         RFP A                   RFP A
+*>
+*>                                -- -- --
+*>        03 04 05                33 43 53
+*>                                   -- --
+*>        13 14 15                00 44 54
+*>                                      --
+*>        23 24 25                10 11 55
+*>
+*>        33 34 35                20 21 22
+*>        --
+*>        00 44 45                30 31 32
+*>        -- --
+*>        01 11 55                40 41 42
+*>        -- -- --
+*>        02 12 22                50 51 52
+*>
+*>  Now let TRANSR = 'C'. RFP A in both UPLO cases is just the conjugate-
+*>  transpose of RFP A above. One therefore gets:
+*>
+*>
+*>           RFP A                   RFP A
+*>
+*>     -- -- -- --                -- -- -- -- -- --
+*>     03 13 23 33 00 01 02    33 00 10 20 30 40 50
+*>     -- -- -- -- --                -- -- -- -- --
+*>     04 14 24 34 44 11 12    43 44 11 21 31 41 51
+*>     -- -- -- -- -- --                -- -- -- --
+*>     05 15 25 35 45 55 22    53 54 55 22 32 42 52
+*>
+*>
+*>  We next  consider Standard Packed Format when N is odd.
+*>  We give an example where N = 5.
+*>
+*>     AP is Upper                 AP is Lower
+*>
+*>   00 01 02 03 04              00
+*>      11 12 13 14              10 11
+*>         22 23 24              20 21 22
+*>            33 34              30 31 32 33
+*>               44              40 41 42 43 44
+*>
+*>
+*>  Let TRANSR = 'N'. RFP holds AP as follows:
+*>  For UPLO = 'U' the upper trapezoid A(0:4,0:2) consists of the last
+*>  three columns of AP upper. The lower triangle A(3:4,0:1) consists of
+*>  conjugate-transpose of the first two   columns of AP upper.
+*>  For UPLO = 'L' the lower trapezoid A(0:4,0:2) consists of the first
+*>  three columns of AP lower. The upper triangle A(0:1,1:2) consists of
+*>  conjugate-transpose of the last two   columns of AP lower.
+*>  To denote conjugate we place -- above the element. This covers the
+*>  case N odd  and TRANSR = 'N'.
+*>
+*>         RFP A                   RFP A
+*>
+*>                                   -- --
+*>        02 03 04                00 33 43
+*>                                      --
+*>        12 13 14                10 11 44
+*>
+*>        22 23 24                20 21 22
+*>        --
+*>        00 33 34                30 31 32
+*>        -- --
+*>        01 11 44                40 41 42
+*>
+*>  Now let TRANSR = 'C'. RFP A in both UPLO cases is just the conjugate-
+*>  transpose of RFP A above. One therefore gets:
+*>
+*>
+*>           RFP A                   RFP A
+*>
+*>     -- -- --                   -- -- -- -- -- --
+*>     02 12 22 00 01             00 10 20 30 40 50
+*>     -- -- -- --                   -- -- -- -- --
+*>     03 13 23 33 11             33 11 21 31 41 51
+*>     -- -- -- -- --                   -- -- -- --
+*>     04 14 24 34 44             43 44 22 32 42 52
+*> \endverbatim
+*>
+*  =====================================================================
       DOUBLE PRECISION FUNCTION ZLANHF( NORM, TRANSR, UPLO, N, A, WORK )
 *
-*  -- LAPACK routine (version 3.2.1)                                    --
-*
-*  -- Contributed by Fred Gustavson of the IBM Watson Research Center --
-*  -- April 2009                                                      --
-*
+*  -- LAPACK computational routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER          NORM, TRANSR, UPLO
@@ -16,184 +259,6 @@
       DOUBLE PRECISION   WORK( 0: * )
       COMPLEX*16         A( 0: * )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  ZLANHF  returns the value of the one norm,  or the Frobenius norm, or
-*  the  infinity norm,  or the  element of  largest absolute value  of a
-*  complex Hermitian matrix A in RFP format.
-*
-*  Description
-*  ===========
-*
-*  ZLANHF returns the value
-*
-*     ZLANHF = ( max(abs(A(i,j))), NORM = 'M' or 'm'
-*              (
-*              ( norm1(A),         NORM = '1', 'O' or 'o'
-*              (
-*              ( normI(A),         NORM = 'I' or 'i'
-*              (
-*              ( normF(A),         NORM = 'F', 'f', 'E' or 'e'
-*
-*  where  norm1  denotes the  one norm of a matrix (maximum column sum),
-*  normI  denotes the  infinity norm  of a matrix  (maximum row sum) and
-*  normF  denotes the  Frobenius norm of a matrix (square root of sum of
-*  squares).  Note that  max(abs(A(i,j)))  is not a  matrix norm.
-*
-*  Arguments
-*  =========
-*
-*  NORM      (input) CHARACTER
-*            Specifies the value to be returned in ZLANHF as described
-*            above.
-*
-*  TRANSR    (input) CHARACTER
-*            Specifies whether the RFP format of A is normal or
-*            conjugate-transposed format.
-*            = 'N':  RFP format is Normal
-*            = 'C':  RFP format is Conjugate-transposed
-*
-*  UPLO      (input) CHARACTER
-*            On entry, UPLO specifies whether the RFP matrix A came from
-*            an upper or lower triangular matrix as follows:
-*
-*            UPLO = 'U' or 'u' RFP A came from an upper triangular
-*            matrix
-*
-*            UPLO = 'L' or 'l' RFP A came from a  lower triangular
-*            matrix
-*
-*  N         (input) INTEGER
-*            The order of the matrix A.  N >= 0.  When N = 0, ZLANHF is
-*            set to zero.
-*
-*   A        (input) COMPLEX*16 array, dimension ( N*(N+1)/2 );
-*            On entry, the matrix A in RFP Format.
-*            RFP Format is described by TRANSR, UPLO and N as follows:
-*            If TRANSR='N' then RFP A is (0:N,0:K-1) when N is even;
-*            K=N/2. RFP A is (0:N-1,0:K) when N is odd; K=N/2. If
-*            TRANSR = 'C' then RFP is the Conjugate-transpose of RFP A
-*            as defined when TRANSR = 'N'. The contents of RFP A are
-*            defined by UPLO as follows: If UPLO = 'U' the RFP A
-*            contains the ( N*(N+1)/2 ) elements of upper packed A
-*            either in normal or conjugate-transpose Format. If
-*            UPLO = 'L' the RFP A contains the ( N*(N+1) /2 ) elements
-*            of lower packed A either in normal or conjugate-transpose
-*            Format. The LDA of RFP A is (N+1)/2 when TRANSR = 'C'. When
-*            TRANSR is 'N' the LDA is N+1 when N is even and is N when
-*            is odd. See the Note below for more details.
-*            Unchanged on exit.
-*
-*  WORK      (workspace) DOUBLE PRECISION array, dimension (LWORK),
-*            where LWORK >= N when NORM = 'I' or '1' or 'O'; otherwise,
-*            WORK is not referenced.
-*
-*  Further Details
-*  ===============
-*
-*  We first consider Standard Packed Format when N is even.
-*  We give an example where N = 6.
-*
-*      AP is Upper             AP is Lower
-*
-*   00 01 02 03 04 05       00
-*      11 12 13 14 15       10 11
-*         22 23 24 25       20 21 22
-*            33 34 35       30 31 32 33
-*               44 45       40 41 42 43 44
-*                  55       50 51 52 53 54 55
-*
-*
-*  Let TRANSR = 'N'. RFP holds AP as follows:
-*  For UPLO = 'U' the upper trapezoid A(0:5,0:2) consists of the last
-*  three columns of AP upper. The lower triangle A(4:6,0:2) consists of
-*  conjugate-transpose of the first three columns of AP upper.
-*  For UPLO = 'L' the lower trapezoid A(1:6,0:2) consists of the first
-*  three columns of AP lower. The upper triangle A(0:2,0:2) consists of
-*  conjugate-transpose of the last three columns of AP lower.
-*  To denote conjugate we place -- above the element. This covers the
-*  case N even and TRANSR = 'N'.
-*
-*         RFP A                   RFP A
-*
-*                                -- -- --
-*        03 04 05                33 43 53
-*                                   -- --
-*        13 14 15                00 44 54
-*                                      --
-*        23 24 25                10 11 55
-*
-*        33 34 35                20 21 22
-*        --
-*        00 44 45                30 31 32
-*        -- --
-*        01 11 55                40 41 42
-*        -- -- --
-*        02 12 22                50 51 52
-*
-*  Now let TRANSR = 'C'. RFP A in both UPLO cases is just the conjugate-
-*  transpose of RFP A above. One therefore gets:
-*
-*
-*           RFP A                   RFP A
-*
-*     -- -- -- --                -- -- -- -- -- --
-*     03 13 23 33 00 01 02    33 00 10 20 30 40 50
-*     -- -- -- -- --                -- -- -- -- --
-*     04 14 24 34 44 11 12    43 44 11 21 31 41 51
-*     -- -- -- -- -- --                -- -- -- --
-*     05 15 25 35 45 55 22    53 54 55 22 32 42 52
-*
-*
-*  We next  consider Standard Packed Format when N is odd.
-*  We give an example where N = 5.
-*
-*     AP is Upper                 AP is Lower
-*
-*   00 01 02 03 04              00
-*      11 12 13 14              10 11
-*         22 23 24              20 21 22
-*            33 34              30 31 32 33
-*               44              40 41 42 43 44
-*
-*
-*  Let TRANSR = 'N'. RFP holds AP as follows:
-*  For UPLO = 'U' the upper trapezoid A(0:4,0:2) consists of the last
-*  three columns of AP upper. The lower triangle A(3:4,0:1) consists of
-*  conjugate-transpose of the first two   columns of AP upper.
-*  For UPLO = 'L' the lower trapezoid A(0:4,0:2) consists of the first
-*  three columns of AP lower. The upper triangle A(0:1,1:2) consists of
-*  conjugate-transpose of the last two   columns of AP lower.
-*  To denote conjugate we place -- above the element. This covers the
-*  case N odd  and TRANSR = 'N'.
-*
-*         RFP A                   RFP A
-*
-*                                   -- --
-*        02 03 04                00 33 43
-*                                      --
-*        12 13 14                10 11 44
-*
-*        22 23 24                20 21 22
-*        --
-*        00 33 34                30 31 32
-*        -- --
-*        01 11 44                40 41 42
-*
-*  Now let TRANSR = 'C'. RFP A in both UPLO cases is just the conjugate-
-*  transpose of RFP A above. One therefore gets:
-*
-*
-*           RFP A                   RFP A
-*
-*     -- -- --                   -- -- -- -- -- --
-*     02 12 22 00 01             00 10 20 30 40 50
-*     -- -- -- --                   -- -- -- -- --
-*     03 13 23 33 11             33 11 21 31 41 51
-*     -- -- -- -- --                   -- -- -- --
-*     04 14 24 34 44             43 44 22 32 42 52
 *
 *  =====================================================================
 *
@@ -227,19 +292,19 @@
 *
       NOE = 1
       IF( MOD( N, 2 ).EQ.0 )
-     +   NOE = 0
+     $   NOE = 0
 *
 *     set ifm = 0 when form='C' or 'c' and 1 otherwise
 *
       IFM = 1
       IF( LSAME( TRANSR, 'C' ) )
-     +   IFM = 0
+     $   IFM = 0
 *
 *     set ilu = 0 when uplo='U or 'u' and 1 otherwise
 *
       ILU = 1
       IF( LSAME( UPLO, 'U' ) )
-     +   ILU = 0
+     $   ILU = 0
 *
 *     set lda = (n+1)/2 when ifm = 0
 *     set lda = n when ifm = 1 and noe = 1
@@ -498,7 +563,7 @@
             END IF
          END IF
       ELSE IF( ( LSAME( NORM, 'I' ) ) .OR. ( LSAME( NORM, 'O' ) ) .OR.
-     +         ( NORM.EQ.'1' ) ) THEN
+     $         ( NORM.EQ.'1' ) ) THEN
 *
 *       Find normI(A) ( = norm1(A), since A is Hermitian).
 *
@@ -524,7 +589,7 @@
 *                    -> A(j+k,j+k)
                      WORK( J+K ) = S + AA
                      IF( I.EQ.K+K )
-     +                  GO TO 10
+     $                  GO TO 10
                      I = I + 1
                      AA = ABS( DBLE( A( I+J*LDA ) ) )
 *                    -> A(j,j)
@@ -1026,7 +1091,7 @@
             ELSE
 *              A is xpose & A is k by n
                IF( ILU.EQ.0 ) THEN
-*                 A' is upper
+*                 A**H is upper
                   DO J = 1, K - 2
                      CALL ZLASSQ( J, A( 0+( K+J )*LDA ), 1, SCALE, S )
 *                    U at A(0,k)
@@ -1037,7 +1102,7 @@
                   END DO
                   DO J = 0, K - 2
                      CALL ZLASSQ( K-J-1, A( J+1+( J+K-1 )*LDA ), 1,
-     +                            SCALE, S )
+     $                            SCALE, S )
 *                    L at A(0,k-1)
                   END DO
                   S = S + S
@@ -1080,7 +1145,7 @@
                      L = L + LDA + 1
                   END DO
                ELSE
-*                 A' is lower
+*                 A**H is lower
                   DO J = 1, K - 1
                      CALL ZLASSQ( J, A( 0+J*LDA ), 1, SCALE, S )
 *                    U at A(0,0)
@@ -1215,7 +1280,7 @@
             ELSE
 *              A is xpose
                IF( ILU.EQ.0 ) THEN
-*                 A' is upper
+*                 A**H is upper
                   DO J = 1, K - 1
                      CALL ZLASSQ( J, A( 0+( K+1+J )*LDA ), 1, SCALE, S )
 *                 U at A(0,k+1)
@@ -1226,7 +1291,7 @@
                   END DO
                   DO J = 0, K - 2
                      CALL ZLASSQ( K-J-1, A( J+1+( J+K )*LDA ), 1, SCALE,
-     +                            S )
+     $                            S )
 *                 L at A(0,k)
                   END DO
                   S = S + S
@@ -1281,7 +1346,7 @@
                      END IF
                   END IF
                ELSE
-*                 A' is lower
+*                 A**H is lower
                   DO J = 1, K - 1
                      CALL ZLASSQ( J, A( 0+( J+1 )*LDA ), 1, SCALE, S )
 *                 U at A(0,1)

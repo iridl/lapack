@@ -1,28 +1,69 @@
+*> \brief \b CERRHE
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE CERRHE( PATH, NUNIT )
+* 
+*       .. Scalar Arguments ..
+*       CHARACTER*3        PATH
+*       INTEGER            NUNIT
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> CERRHE tests the error exits for the COMPLEX routines
+*> for Hermitian indefinite matrices.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] PATH
+*> \verbatim
+*>          PATH is CHARACTER*3
+*>          The LAPACK path name for the routines to be tested.
+*> \endverbatim
+*>
+*> \param[in] NUNIT
+*> \verbatim
+*>          NUNIT is INTEGER
+*>          The unit number for output.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complex_lin
+*
+*  =====================================================================
       SUBROUTINE CERRHE( PATH, NUNIT )
 *
-*  -- LAPACK test routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK test routine (version 3.4.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER*3        PATH
       INTEGER            NUNIT
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  CERRHE tests the error exits for the COMPLEX routines
-*  for Hermitian indefinite matrices.
-*
-*  Arguments
-*  =========
-*
-*  PATH    (input) CHARACTER*3
-*          The LAPACK path name for the routines to be tested.
-*
-*  NUNIT   (input) INTEGER
-*          The unit number for output.
 *
 *  =====================================================================
 *
@@ -48,8 +89,8 @@
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           ALAESM, CHECON, CHERFS, CHETF2, CHETRF, CHETRI,
-     $                   CHETRS, CHKXER, CHPCON, CHPRFS, CHPTRF, CHPTRI,
-     $                   CHPTRS
+     $                   CHETRI2, CHETRS, CHKXER, CHPCON, CHPRFS,
+     $                   CHPTRF, CHPTRI, CHPTRS
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
@@ -129,6 +170,19 @@
          INFOT = 4
          CALL CHETRI( 'U', 2, A, 1, IP, W, INFO )
          CALL CHKXER( 'CHETRI', INFOT, NOUT, LERR, OK )
+*
+*        CHETRI2
+*
+         SRNAMT = 'CHETRI2'
+         INFOT = 1
+         CALL CHETRI2( '/', 0, A, 1, IP, W, 1, INFO )
+         CALL CHKXER( 'CHETRI2', INFOT, NOUT, LERR, OK )
+         INFOT = 2
+         CALL CHETRI2( 'U', -1, A, 1, IP, W, 1, INFO )
+         CALL CHKXER( 'CHETRI2', INFOT, NOUT, LERR, OK )
+         INFOT = 4
+         CALL CHETRI2( 'U', 2, A, 1, IP, W, 1, INFO )
+         CALL CHKXER( 'CHETRI2', INFOT, NOUT, LERR, OK )
 *
 *        CHETRS
 *

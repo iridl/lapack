@@ -1,10 +1,137 @@
-      SUBROUTINE CLARF( SIDE, M, N, V, INCV, TAU, C, LDC, WORK )
-      IMPLICIT NONE
+*> \brief \b CLARF
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*> \htmlonly
+*> Download CLARF + dependencies 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/clarf.f"> 
+*> [TGZ]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/clarf.f"> 
+*> [ZIP]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/clarf.f"> 
+*> [TXT]</a>
+*> \endhtmlonly 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE CLARF( SIDE, M, N, V, INCV, TAU, C, LDC, WORK )
+* 
+*       .. Scalar Arguments ..
+*       CHARACTER          SIDE
+*       INTEGER            INCV, LDC, M, N
+*       COMPLEX            TAU
+*       ..
+*       .. Array Arguments ..
+*       COMPLEX            C( LDC, * ), V( * ), WORK( * )
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> CLARF applies a complex elementary reflector H to a complex M-by-N
+*> matrix C, from either the left or the right. H is represented in the
+*> form
+*>
+*>       H = I - tau * v * v**H
+*>
+*> where tau is a complex scalar and v is a complex vector.
+*>
+*> If tau = 0, then H is taken to be the unit matrix.
+*>
+*> To apply H**H (the conjugate transpose of H), supply conjg(tau) instead
+*> tau.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] SIDE
+*> \verbatim
+*>          SIDE is CHARACTER*1
+*>          = 'L': form  H * C
+*>          = 'R': form  C * H
+*> \endverbatim
+*>
+*> \param[in] M
+*> \verbatim
+*>          M is INTEGER
+*>          The number of rows of the matrix C.
+*> \endverbatim
+*>
+*> \param[in] N
+*> \verbatim
+*>          N is INTEGER
+*>          The number of columns of the matrix C.
+*> \endverbatim
+*>
+*> \param[in] V
+*> \verbatim
+*>          V is COMPLEX array, dimension
+*>                     (1 + (M-1)*abs(INCV)) if SIDE = 'L'
+*>                  or (1 + (N-1)*abs(INCV)) if SIDE = 'R'
+*>          The vector v in the representation of H. V is not used if
+*>          TAU = 0.
+*> \endverbatim
+*>
+*> \param[in] INCV
+*> \verbatim
+*>          INCV is INTEGER
+*>          The increment between elements of v. INCV <> 0.
+*> \endverbatim
+*>
+*> \param[in] TAU
+*> \verbatim
+*>          TAU is COMPLEX
+*>          The value tau in the representation of H.
+*> \endverbatim
+*>
+*> \param[in,out] C
+*> \verbatim
+*>          C is COMPLEX array, dimension (LDC,N)
+*>          On entry, the M-by-N matrix C.
+*>          On exit, C is overwritten by the matrix H * C if SIDE = 'L',
+*>          or C * H if SIDE = 'R'.
+*> \endverbatim
+*>
+*> \param[in] LDC
+*> \verbatim
+*>          LDC is INTEGER
+*>          The leading dimension of the array C. LDC >= max(1,M).
+*> \endverbatim
+*>
+*> \param[out] WORK
+*> \verbatim
+*>          WORK is COMPLEX array, dimension
+*>                         (N) if SIDE = 'L'
+*>                      or (M) if SIDE = 'R'
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complexOTHERauxiliary
+*
+*  =====================================================================
+      SUBROUTINE CLARF( SIDE, M, N, V, INCV, TAU, C, LDC, WORK )
+*
+*  -- LAPACK auxiliary routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     November 2011
 *
 *     .. Scalar Arguments ..
       CHARACTER          SIDE
@@ -14,59 +141,6 @@
 *     .. Array Arguments ..
       COMPLEX            C( LDC, * ), V( * ), WORK( * )
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  CLARF applies a complex elementary reflector H to a complex M-by-N
-*  matrix C, from either the left or the right. H is represented in the
-*  form
-*
-*        H = I - tau * v * v'
-*
-*  where tau is a complex scalar and v is a complex vector.
-*
-*  If tau = 0, then H is taken to be the unit matrix.
-*
-*  To apply H' (the conjugate transpose of H), supply conjg(tau) instead
-*  tau.
-*
-*  Arguments
-*  =========
-*
-*  SIDE    (input) CHARACTER*1
-*          = 'L': form  H * C
-*          = 'R': form  C * H
-*
-*  M       (input) INTEGER
-*          The number of rows of the matrix C.
-*
-*  N       (input) INTEGER
-*          The number of columns of the matrix C.
-*
-*  V       (input) COMPLEX array, dimension
-*                     (1 + (M-1)*abs(INCV)) if SIDE = 'L'
-*                  or (1 + (N-1)*abs(INCV)) if SIDE = 'R'
-*          The vector v in the representation of H. V is not used if
-*          TAU = 0.
-*
-*  INCV    (input) INTEGER
-*          The increment between elements of v. INCV <> 0.
-*
-*  TAU     (input) COMPLEX
-*          The value tau in the representation of H.
-*
-*  C       (input/output) COMPLEX array, dimension (LDC,N)
-*          On entry, the M-by-N matrix C.
-*          On exit, C is overwritten by the matrix H * C if SIDE = 'L',
-*          or C * H if SIDE = 'R'.
-*
-*  LDC     (input) INTEGER
-*          The leading dimension of the array C. LDC >= max(1,M).
-*
-*  WORK    (workspace) COMPLEX array, dimension
-*                         (N) if SIDE = 'L'
-*                      or (M) if SIDE = 'R'
 *
 *  =====================================================================
 *
@@ -126,12 +200,12 @@
 *
          IF( LASTV.GT.0 ) THEN
 *
-*           w(1:lastc,1) := C(1:lastv,1:lastc)' * v(1:lastv,1)
+*           w(1:lastc,1) := C(1:lastv,1:lastc)**H * v(1:lastv,1)
 *
             CALL CGEMV( 'Conjugate transpose', LASTV, LASTC, ONE,
      $           C, LDC, V, INCV, ZERO, WORK, 1 )
 *
-*           C(1:lastv,1:lastc) := C(...) - v(1:lastv,1) * w(1:lastc,1)'
+*           C(1:lastv,1:lastc) := C(...) - v(1:lastv,1) * w(1:lastc,1)**H
 *
             CALL CGERC( LASTV, LASTC, -TAU, V, INCV, WORK, 1, C, LDC )
          END IF
@@ -146,7 +220,7 @@
             CALL CGEMV( 'No transpose', LASTC, LASTV, ONE, C, LDC,
      $           V, INCV, ZERO, WORK, 1 )
 *
-*           C(1:lastc,1:lastv) := C(...) - w(1:lastc,1) * v(1:lastv,1)'
+*           C(1:lastc,1:lastv) := C(...) - w(1:lastc,1) * v(1:lastv,1)**H
 *
             CALL CGERC( LASTC, LASTV, -TAU, WORK, 1, V, INCV, C, LDC )
          END IF

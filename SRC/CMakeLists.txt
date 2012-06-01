@@ -148,7 +148,7 @@ set(SLASRC
 set(DSLASRC spotrs.f sgetrs.f spotrf.f sgetrf.f) 
 
 set(SXLASRC  sgesvxx.f sgerfsx.f sla_gerfsx_extended.f sla_geamv.f		
-   sla_gercond.f sla_rpvgrw.f ssysvxx.f ssyrfsx.f			
+   sla_gercond.f sla_gerpvgrw.f ssysvxx.f ssyrfsx.f			
    sla_syrfsx_extended.f sla_syamv.f sla_syrcond.f sla_syrpvgrw.f	
    sposvxx.f sporfsx.f sla_porfsx_extended.f sla_porcond.f		
    sla_porpvgrw.f sgbsvxx.f sgbrfsx.f sla_gbrfsx_extended.f		
@@ -172,7 +172,8 @@ set(CLASRC
    checon.f cheev.f  cheevd.f cheevr.f cheevx.f chegs2.f chegst.f 
    chegv.f  chegvd.f chegvx.f cherfs.f chesv.f  chesvx.f chetd2.f 
    chetf2.f chetrd.f 
-   chetrf.f chetri.f chetrs.f chetrs2.f chgeqz.f chpcon.f chpev.f  chpevd.f 
+   chetrf.f chetri.f chetri2.f  chetri2x.f cheswapr.f
+   chetrs.f chetrs2.f chgeqz.f chpcon.f chpev.f  chpevd.f 
    chpevx.f chpgst.f chpgv.f  chpgvd.f chpgvx.f chprfs.f chpsv.f  
    chpsvx.f 
    chptrd.f chptrf.f chptri.f chptrs.f chsein.f chseqr.f clabrd.f 
@@ -216,7 +217,7 @@ set(CLASRC
    cbbcsd.f clapmr.f cunbdb.f cuncsd.f )
 
 set(CXLASRC     cgesvxx.f cgerfsx.f cla_gerfsx_extended.f cla_geamv.f 
-   cla_gercond_c.f cla_gercond_x.f cla_rpvgrw.f 
+   cla_gercond_c.f cla_gercond_x.f cla_gerpvgrw.f 
    csysvxx.f csyrfsx.f cla_syrfsx_extended.f cla_syamv.f 
    cla_syrcond_c.f cla_syrcond_x.f cla_syrpvgrw.f 
    cposvxx.f cporfsx.f cla_porfsx_extended.f 
@@ -288,7 +289,7 @@ set(DLASRC
    dbbcsd.f dlapmr.f dorbdb.f dorcsd.f )
 
 set(DXLASRC dgesvxx.f dgerfsx.f dla_gerfsx_extended.f dla_geamv.f		
-   dla_gercond.f dla_rpvgrw.f dsysvxx.f dsyrfsx.f			
+   dla_gercond.f dla_gerpvgrw.f dsysvxx.f dsyrfsx.f			
    dla_syrfsx_extended.f dla_syamv.f dla_syrcond.f dla_syrpvgrw.f	
    dposvxx.f dporfsx.f dla_porfsx_extended.f dla_porcond.f		
    dla_porpvgrw.f dgbsvxx.f dgbrfsx.f dla_gbrfsx_extended.f		
@@ -312,7 +313,8 @@ set(ZLASRC
    zhecon.f zheev.f  zheevd.f zheevr.f zheevx.f zhegs2.f zhegst.f 
    zhegv.f  zhegvd.f zhegvx.f zherfs.f zhesv.f  zhesvx.f zhetd2.f 
    zhetf2.f zhetrd.f 
-   zhetrf.f zhetri.f zhetrs.f zhetrs2.f zhgeqz.f zhpcon.f zhpev.f  zhpevd.f 
+   zhetrf.f zhetri.f zhetri2.f zhetri2x.f zheswapr.f
+   zhetrs.f zhetrs2.f zhgeqz.f zhpcon.f zhpev.f  zhpevd.f 
    zhpevx.f zhpgst.f zhpgv.f  zhpgvd.f zhpgvx.f zhprfs.f zhpsv.f  
    zhpsvx.f 
    zhptrd.f zhptrf.f zhptri.f zhptrs.f zhsein.f zhseqr.f zlabrd.f 
@@ -361,7 +363,7 @@ set(ZLASRC
    zbbcsd.f zlapmr.f zunbdb.f zuncsd.f )
 
 set(ZXLASRC  zgesvxx.f zgerfsx.f zla_gerfsx_extended.f zla_geamv.f		
-   zla_gercond_c.f zla_gercond_x.f zla_rpvgrw.f zsysvxx.f zsyrfsx.f	
+   zla_gercond_c.f zla_gercond_x.f zla_gerpvgrw.f zsysvxx.f zsyrfsx.f	
    zla_syrfsx_extended.f zla_syamv.f zla_syrcond_c.f zla_syrcond_x.f	
    zla_syrpvgrw.f zposvxx.f zporfsx.f zla_porfsx_extended.f		
    zla_porcond_c.f zla_porcond_x.f zla_porpvgrw.f zgbsvxx.f zgbrfsx.f	
@@ -371,24 +373,34 @@ set(ZXLASRC  zgesvxx.f zgerfsx.f zla_gerfsx_extended.f zla_geamv.f
    zla_lin_berr.f zlarscl2.f zlascl2.f zla_wwaddw.f)
 
 
-if( USEXBLAS)
+if( USE_XBLAS)
   set(ALLXOBJ ${SXLASRC} ${DXLASRC} ${CXLASRC} ${ZXLASRC} ${ALLXAUX})
 endif()
 
-set(ALLOBJ ${SLASRC} ${DSLASRC} ${DLASRC} ${CLASRC} ${ZCLASRC} ${ZLASRC} ${SCLAUX} ${DZLAUX}	
-	${ALLAUX})
 if(BUILD_SINGLE)
-set(ALLOBJ  ${SLASRC} ${ALLAUX}	${SCLAUX} ${DSLASRC} )
+set(ALLOBJ  ${SLASRC} ${ALLAUX}	${SCLAUX} )
+message(STATUS "Building Single Precision")
 endif()
 if(BUILD_DOUBLE)
-  set(ALLOBJ ${DLASRC} ${ALLAUX} ${DZLAUX} ${DSLASRC})
+  set(ALLOBJ ${ALLOBJ} ${DLASRC} ${ALLAUX} ${DZLAUX} ${DSLASRC})
+message(STATUS "Building Double Precision")
 endif()
 if(BUILD_COMPLEX)
-  set(ALLOBJ ${CLASRC} ${ALLAUX} ${SCLAUX} ${ZCLASRC} )
+  set(ALLOBJ ${ALLOBJ} ${CLASRC} ${ALLAUX} ${SCLAUX} )
+message(STATUS "Building Complex Precision")
 endif()
 if(BUILD_COMPLEX16)
-  set(ALLOBJ  ${ZLASRC} ${ALLAUX} ${DZLAUX} ${ZCLASRC})
+  set(ALLOBJ  ${ALLOBJ} ${ZLASRC} ${ALLAUX} ${DZLAUX} ${ZCLASRC})
+message(STATUS "Building Double Complex Precision")
 endif()
+
+if (NOT ALLOBJ)
+    message(FATAL_ERROR "-->LAPACK SRC BUILD: NOTHING TO BUILD, NO PRECISION SELECTED:
+     PLEASE ENABLE AT LEAST ONE OF THOSE: BUILD_SINGLE, BUILD_COMPLEX, BUILD_DOUBLE, BUILD_COMPLEX16.")
+endif()
+
+list(REMOVE_DUPLICATES ALLOBJ)
+
 add_library(lapack ${ALLOBJ} ${ALLXOBJ})
-target_link_libraries(lapack blas)
+target_link_libraries(lapack ${BLAS_LIBRARIES} ${XBLAS_LIBRARY})
 lapack_install_library(lapack)

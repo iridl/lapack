@@ -1,17 +1,59 @@
+*> \brief \b SROTG
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE SROTG(SA,SB,C,S)
+* 
+*       .. Scalar Arguments ..
+*       REAL C,S,SA,SB
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*>    SROTG construct givens plane rotation.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup single_blas_level1
+*
+*> \par Further Details:
+*  =====================
+*>
+*> \verbatim
+*>
+*>     jack dongarra, linpack, 3/11/78.
+*> \endverbatim
+*>
+*  =====================================================================
       SUBROUTINE SROTG(SA,SB,C,S)
+*
+*  -- Reference BLAS level1 routine (version 3.4.0) --
+*  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2011
+*
 *     .. Scalar Arguments ..
       REAL C,S,SA,SB
 *     ..
-*
-*  Purpose
-*  =======
-*
-*     SROTG construct givens plane rotation.
-*
-*  Further Details
-*  ===============
-*
-*     jack dongarra, linpack, 3/11/78.
 *
 *  =====================================================================
 *
@@ -24,20 +66,21 @@
       ROE = SB
       IF (ABS(SA).GT.ABS(SB)) ROE = SA
       SCALE = ABS(SA) + ABS(SB)
-      IF (SCALE.NE.0.0) GO TO 10
-      C = 1.0
-      S = 0.0
-      R = 0.0
-      Z = 0.0
-      GO TO 20
-   10 R = SCALE*SQRT((SA/SCALE)**2+ (SB/SCALE)**2)
-      R = SIGN(1.0,ROE)*R
-      C = SA/R
-      S = SB/R
-      Z = 1.0
-      IF (ABS(SA).GT.ABS(SB)) Z = S
-      IF (ABS(SB).GE.ABS(SA) .AND. C.NE.0.0) Z = 1.0/C
-   20 SA = R
+      IF (SCALE.EQ.0.0) THEN
+         C = 1.0
+         S = 0.0
+         R = 0.0
+         Z = 0.0
+      ELSE
+         R = SCALE*SQRT((SA/SCALE)**2+ (SB/SCALE)**2)
+         R = SIGN(1.0,ROE)*R
+         C = SA/R
+         S = SB/R
+         Z = 1.0
+         IF (ABS(SA).GT.ABS(SB)) Z = S
+         IF (ABS(SB).GE.ABS(SA) .AND. C.NE.0.0) Z = 1.0/C
+      END IF
+      SA = R
       SB = Z
       RETURN
       END

@@ -1,83 +1,173 @@
+*> \brief \b CLAGS2
+*
+*  =========== DOCUMENTATION ===========
+*
+* Online html documentation available at 
+*            http://www.netlib.org/lapack/explore-html/ 
+*
+*> \htmlonly
+*> Download CLAGS2 + dependencies 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.tgz?format=tgz&filename=/lapack/lapack_routine/clags2.f"> 
+*> [TGZ]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.zip?format=zip&filename=/lapack/lapack_routine/clags2.f"> 
+*> [ZIP]</a> 
+*> <a href="http://www.netlib.org/cgi-bin/netlibfiles.txt?format=txt&filename=/lapack/lapack_routine/clags2.f"> 
+*> [TXT]</a>
+*> \endhtmlonly 
+*
+*  Definition:
+*  ===========
+*
+*       SUBROUTINE CLAGS2( UPPER, A1, A2, A3, B1, B2, B3, CSU, SNU, CSV,
+*                          SNV, CSQ, SNQ )
+* 
+*       .. Scalar Arguments ..
+*       LOGICAL            UPPER
+*       REAL               A1, A3, B1, B3, CSQ, CSU, CSV
+*       COMPLEX            A2, B2, SNQ, SNU, SNV
+*       ..
+*  
+*
+*> \par Purpose:
+*  =============
+*>
+*> \verbatim
+*>
+*> CLAGS2 computes 2-by-2 unitary matrices U, V and Q, such
+*> that if ( UPPER ) then
+*>
+*>           U**H *A*Q = U**H *( A1 A2 )*Q = ( x  0  )
+*>                             ( 0  A3 )     ( x  x  )
+*> and
+*>           V**H*B*Q = V**H *( B1 B2 )*Q = ( x  0  )
+*>                            ( 0  B3 )     ( x  x  )
+*>
+*> or if ( .NOT.UPPER ) then
+*>
+*>           U**H *A*Q = U**H *( A1 0  )*Q = ( x  x  )
+*>                             ( A2 A3 )     ( 0  x  )
+*> and
+*>           V**H *B*Q = V**H *( B1 0  )*Q = ( x  x  )
+*>                             ( B2 B3 )     ( 0  x  )
+*> where
+*>
+*>   U = (   CSU    SNU ), V = (  CSV    SNV ),
+*>       ( -SNU**H  CSU )      ( -SNV**H CSV )
+*>
+*>   Q = (   CSQ    SNQ )
+*>       ( -SNQ**H  CSQ )
+*>
+*> The rows of the transformed A and B are parallel. Moreover, if the
+*> input 2-by-2 matrix A is not zero, then the transformed (1,1) entry
+*> of A is not zero. If the input matrices A and B are both not zero,
+*> then the transformed (2,2) element of B is not zero, except when the
+*> first rows of input A and B are parallel and the second rows are
+*> zero.
+*> \endverbatim
+*
+*  Arguments:
+*  ==========
+*
+*> \param[in] UPPER
+*> \verbatim
+*>          UPPER is LOGICAL
+*>          = .TRUE.: the input matrices A and B are upper triangular.
+*>          = .FALSE.: the input matrices A and B are lower triangular.
+*> \endverbatim
+*>
+*> \param[in] A1
+*> \verbatim
+*>          A1 is REAL
+*> \endverbatim
+*>
+*> \param[in] A2
+*> \verbatim
+*>          A2 is COMPLEX
+*> \endverbatim
+*>
+*> \param[in] A3
+*> \verbatim
+*>          A3 is REAL
+*>          On entry, A1, A2 and A3 are elements of the input 2-by-2
+*>          upper (lower) triangular matrix A.
+*> \endverbatim
+*>
+*> \param[in] B1
+*> \verbatim
+*>          B1 is REAL
+*> \endverbatim
+*>
+*> \param[in] B2
+*> \verbatim
+*>          B2 is COMPLEX
+*> \endverbatim
+*>
+*> \param[in] B3
+*> \verbatim
+*>          B3 is REAL
+*>          On entry, B1, B2 and B3 are elements of the input 2-by-2
+*>          upper (lower) triangular matrix B.
+*> \endverbatim
+*>
+*> \param[out] CSU
+*> \verbatim
+*>          CSU is REAL
+*> \endverbatim
+*>
+*> \param[out] SNU
+*> \verbatim
+*>          SNU is COMPLEX
+*>          The desired unitary matrix U.
+*> \endverbatim
+*>
+*> \param[out] CSV
+*> \verbatim
+*>          CSV is REAL
+*> \endverbatim
+*>
+*> \param[out] SNV
+*> \verbatim
+*>          SNV is COMPLEX
+*>          The desired unitary matrix V.
+*> \endverbatim
+*>
+*> \param[out] CSQ
+*> \verbatim
+*>          CSQ is REAL
+*> \endverbatim
+*>
+*> \param[out] SNQ
+*> \verbatim
+*>          SNQ is COMPLEX
+*>          The desired unitary matrix Q.
+*> \endverbatim
+*
+*  Authors:
+*  ========
+*
+*> \author Univ. of Tennessee 
+*> \author Univ. of California Berkeley 
+*> \author Univ. of Colorado Denver 
+*> \author NAG Ltd. 
+*
+*> \date November 2011
+*
+*> \ingroup complexOTHERauxiliary
+*
+*  =====================================================================
       SUBROUTINE CLAGS2( UPPER, A1, A2, A3, B1, B2, B3, CSU, SNU, CSV,
      $                   SNV, CSQ, SNQ )
 *
-*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK auxiliary routine (version 3.4.0) --
 *  -- LAPACK is a software package provided by Univ. of Tennessee,    --
 *  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-*     November 2006
+*     November 2011
 *
 *     .. Scalar Arguments ..
       LOGICAL            UPPER
       REAL               A1, A3, B1, B3, CSQ, CSU, CSV
       COMPLEX            A2, B2, SNQ, SNU, SNV
 *     ..
-*
-*  Purpose
-*  =======
-*
-*  CLAGS2 computes 2-by-2 unitary matrices U, V and Q, such
-*  that if ( UPPER ) then
-*
-*            U'*A*Q = U'*( A1 A2 )*Q = ( x  0  )
-*                        ( 0  A3 )     ( x  x  )
-*  and
-*            V'*B*Q = V'*( B1 B2 )*Q = ( x  0  )
-*                        ( 0  B3 )     ( x  x  )
-*
-*  or if ( .NOT.UPPER ) then
-*
-*            U'*A*Q = U'*( A1 0  )*Q = ( x  x  )
-*                        ( A2 A3 )     ( 0  x  )
-*  and
-*            V'*B*Q = V'*( B1 0  )*Q = ( x  x  )
-*                        ( B2 B3 )     ( 0  x  )
-*  where
-*
-*    U = (     CSU      SNU ), V = (     CSV     SNV ),
-*        ( -CONJG(SNU)  CSU )      ( -CONJG(SNV) CSV )
-*
-*    Q = (     CSQ      SNQ )
-*        ( -CONJG(SNQ)  CSQ )
-*
-*  Z' denotes the conjugate transpose of Z.
-*
-*  The rows of the transformed A and B are parallel. Moreover, if the
-*  input 2-by-2 matrix A is not zero, then the transformed (1,1) entry
-*  of A is not zero. If the input matrices A and B are both not zero,
-*  then the transformed (2,2) element of B is not zero, except when the
-*  first rows of input A and B are parallel and the second rows are
-*  zero.
-*
-*  Arguments
-*  =========
-*
-*  UPPER   (input) LOGICAL
-*          = .TRUE.: the input matrices A and B are upper triangular.
-*          = .FALSE.: the input matrices A and B are lower triangular.
-*
-*  A1      (input) REAL
-*  A2      (input) COMPLEX
-*  A3      (input) REAL
-*          On entry, A1, A2 and A3 are elements of the input 2-by-2
-*          upper (lower) triangular matrix A.
-*
-*  B1      (input) REAL
-*  B2      (input) COMPLEX
-*  B3      (input) REAL
-*          On entry, B1, B2 and B3 are elements of the input 2-by-2
-*          upper (lower) triangular matrix B.
-*
-*  CSU     (output) REAL
-*  SNU     (output) COMPLEX
-*          The desired unitary matrix U.
-*
-*  CSV     (output) REAL
-*  SNV     (output) COMPLEX
-*          The desired unitary matrix V.
-*
-*  CSQ     (output) REAL
-*  SNQ     (output) COMPLEX
-*          The desired unitary matrix Q.
 *
 *  =====================================================================
 *
@@ -135,8 +225,8 @@
          IF( ABS( CSL ).GE.ABS( SNL ) .OR. ABS( CSR ).GE.ABS( SNR ) )
      $        THEN
 *
-*           Compute the (1,1) and (1,2) elements of U'*A and V'*B,
-*           and (1,2) element of |U|'*|A| and |V|'*|B|.
+*           Compute the (1,1) and (1,2) elements of U**H *A and V**H *B,
+*           and (1,2) element of |U|**H *|A| and |V|**H *|B|.
 *
             UA11R = CSL*A1
             UA12 = CSL*A2 + D1*SNL*A3
@@ -147,7 +237,7 @@
             AUA12 = ABS( CSL )*ABS1( A2 ) + ABS( SNL )*ABS( A3 )
             AVB12 = ABS( CSR )*ABS1( B2 ) + ABS( SNR )*ABS( B3 )
 *
-*           zero (1,2) elements of U'*A and V'*B
+*           zero (1,2) elements of U**H *A and V**H *B
 *
             IF( ( ABS( UA11R )+ABS1( UA12 ) ).EQ.ZERO ) THEN
                CALL CLARTG( -CMPLX( VB11R ), CONJG( VB12 ), CSQ, SNQ,
@@ -171,8 +261,8 @@
 *
          ELSE
 *
-*           Compute the (2,1) and (2,2) elements of U'*A and V'*B,
-*           and (2,2) element of |U|'*|A| and |V|'*|B|.
+*           Compute the (2,1) and (2,2) elements of U**H *A and V**H *B,
+*           and (2,2) element of |U|**H *|A| and |V|**H *|B|.
 *
             UA21 = -CONJG( D1 )*SNL*A1
             UA22 = -CONJG( D1 )*SNL*A2 + CSL*A3
@@ -183,7 +273,7 @@
             AUA22 = ABS( SNL )*ABS1( A2 ) + ABS( CSL )*ABS( A3 )
             AVB22 = ABS( SNR )*ABS1( B2 ) + ABS( CSR )*ABS( B3 )
 *
-*           zero (2,2) elements of U'*A and V'*B, and then swap.
+*           zero (2,2) elements of U**H *A and V**H *B, and then swap.
 *
             IF( ( ABS1( UA21 )+ABS1( UA22 ) ).EQ.ZERO ) THEN
                CALL CLARTG( -CONJG( VB21 ), CONJG( VB22 ), CSQ, SNQ, R )
@@ -232,8 +322,8 @@
          IF( ABS( CSR ).GE.ABS( SNR ) .OR. ABS( CSL ).GE.ABS( SNL ) )
      $        THEN
 *
-*           Compute the (2,1) and (2,2) elements of U'*A and V'*B,
-*           and (2,1) element of |U|'*|A| and |V|'*|B|.
+*           Compute the (2,1) and (2,2) elements of U**H *A and V**H *B,
+*           and (2,1) element of |U|**H *|A| and |V|**H *|B|.
 *
             UA21 = -D1*SNR*A1 + CSR*A2
             UA22R = CSR*A3
@@ -244,7 +334,7 @@
             AUA21 = ABS( SNR )*ABS( A1 ) + ABS( CSR )*ABS1( A2 )
             AVB21 = ABS( SNL )*ABS( B1 ) + ABS( CSL )*ABS1( B2 )
 *
-*           zero (2,1) elements of U'*A and V'*B.
+*           zero (2,1) elements of U**H *A and V**H *B.
 *
             IF( ( ABS1( UA21 )+ABS( UA22R ) ).EQ.ZERO ) THEN
                CALL CLARTG( CMPLX( VB22R ), VB21, CSQ, SNQ, R )
@@ -264,8 +354,8 @@
 *
          ELSE
 *
-*           Compute the (1,1) and (1,2) elements of U'*A and V'*B,
-*           and (1,1) element of |U|'*|A| and |V|'*|B|.
+*           Compute the (1,1) and (1,2) elements of U**H *A and V**H *B,
+*           and (1,1) element of |U|**H *|A| and |V|**H *|B|.
 *
             UA11 = CSR*A1 + CONJG( D1 )*SNR*A2
             UA12 = CONJG( D1 )*SNR*A3
@@ -276,7 +366,7 @@
             AUA11 = ABS( CSR )*ABS( A1 ) + ABS( SNR )*ABS1( A2 )
             AVB11 = ABS( CSL )*ABS( B1 ) + ABS( SNL )*ABS1( B2 )
 *
-*           zero (1,1) elements of U'*A and V'*B, and then swap.
+*           zero (1,1) elements of U**H *A and V**H *B, and then swap.
 *
             IF( ( ABS1( UA11 )+ABS1( UA12 ) ).EQ.ZERO ) THEN
                CALL CLARTG( VB12, VB11, CSQ, SNQ, R )
