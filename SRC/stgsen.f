@@ -2,8 +2,9 @@
      $                   ALPHAR, ALPHAI, BETA, Q, LDQ, Z, LDZ, M, PL,
      $                   PR, DIF, WORK, LWORK, IWORK, LIWORK, INFO )
 *
-*  -- LAPACK routine (version 3.1.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*  -- LAPACK routine (version 3.2.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *     January 2007
 *
 *     Modified to call SLACN2 in place of SLACON, 7 Feb 03, SJH.
@@ -177,8 +178,7 @@
 *          message related to LWORK is issued by XERBLA.
 *
 *  IWORK   (workspace/output) INTEGER array, dimension (MAX(1,LIWORK))
-*          IF IJOB = 0, IWORK is not referenced.  Otherwise,
-*          on exit, if INFO = 0, IWORK(1) returns the optimal LIWORK.
+*          On exit, if INFO = 0, IWORK(1) returns the optimal LIWORK.
 *
 *  LIWORK  (input) INTEGER
 *          The dimension of the array IWORK. LIWORK >= 1.
@@ -700,7 +700,7 @@
                   DO 80 I = 1, N
                      A( K, I ) = -A( K, I )
                      B( K, I ) = -B( K, I )
-                     Q( I, K ) = -Q( I, K )
+                     IF( WANTQ ) Q( I, K ) = -Q( I, K )
    80             CONTINUE
                END IF
 *

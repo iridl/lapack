@@ -1,8 +1,9 @@
       SUBROUTINE CGELSD( M, N, NRHS, A, LDA, B, LDB, S, RCOND, RANK,
      $                   WORK, LWORK, RWORK, IWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *     November 2006
 *
 *     .. Scalar Arguments ..
@@ -114,10 +115,10 @@
 *  RWORK   (workspace) REAL array, dimension (MAX(1,LRWORK))
 *          LRWORK >=
 *             10*N + 2*N*SMLSIZ + 8*N*NLVL + 3*SMLSIZ*NRHS +
-*             (SMLSIZ+1)**2
+*             MAX( (SMLSIZ+1)**2, N*(1+NRHS) + 2*NRHS )
 *          if M is greater than or equal to N or
 *             10*M + 2*M*SMLSIZ + 8*M*NLVL + 3*SMLSIZ*NRHS +
-*             (SMLSIZ+1)**2
+*             MAX( (SMLSIZ+1)**2, N*(1+NRHS) + 2*NRHS )
 *          if M is less than N, the code will execute correctly.
 *          SMLSIZ is returned by ILAENV and is equal to the maximum
 *          size of the subproblems at the bottom of the computation
@@ -229,7 +230,7 @@
 *              Path 1 - overdetermined or exactly determined.
 *
                LRWORK = 10*N + 2*N*SMLSIZ + 8*N*NLVL + 3*SMLSIZ*NRHS +
-     $                  ( SMLSIZ + 1 )**2
+     $                  MAX( (SMLSIZ+1)**2, N*(1+NRHS) + 2*NRHS )
                MAXWRK = MAX( MAXWRK, 2*N + ( MM + N )*ILAENV( 1,
      $                       'CGEBRD', ' ', MM, N, -1, -1 ) )
                MAXWRK = MAX( MAXWRK, 2*N + NRHS*ILAENV( 1, 'CUNMBR',
@@ -241,7 +242,7 @@
             END IF
             IF( N.GT.M ) THEN
                LRWORK = 10*M + 2*M*SMLSIZ + 8*M*NLVL + 3*SMLSIZ*NRHS +
-     $                  ( SMLSIZ + 1 )**2
+     $                  MAX( (SMLSIZ+1)**2, N*(1+NRHS) + 2*NRHS )
                IF( N.GE.MNTHR ) THEN
 *
 *                 Path 2a - underdetermined, with many more columns
@@ -261,6 +262,10 @@
                      MAXWRK = MAX( MAXWRK, M*M + 2*M )
                   END IF
                   MAXWRK = MAX( MAXWRK, M*M + 4*M + M*NRHS )
+!     XXX: Ensure the Path 2a case below is triggered.  The workspace
+!     calculation should use queries for all routines eventually.
+                  MAXWRK = MAX( MAXWRK,
+     $                 4*M+M*M+MAX( M, 2*M-4, NRHS, N-3*M ) )
                ELSE
 *
 *                 Path 2 - underdetermined.

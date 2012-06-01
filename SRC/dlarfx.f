@@ -1,7 +1,9 @@
       SUBROUTINE DLARFX( SIDE, M, N, V, TAU, C, LDC, WORK )
+      IMPLICIT NONE
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*  -- LAPACK auxiliary routine (version 3.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *     November 2006
 *
 *     .. Scalar Arguments ..
@@ -77,7 +79,7 @@
       EXTERNAL           LSAME
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DGEMV, DGER
+      EXTERNAL           DLARF
 *     ..
 *     .. Executable Statements ..
 *
@@ -92,14 +94,7 @@
 *
 *        Code for general M
 *
-*        w := C'*v
-*
-         CALL DGEMV( 'Transpose', M, N, ONE, C, LDC, V, 1, ZERO, WORK,
-     $               1 )
-*
-*        C := C - tau * v * w'
-*
-         CALL DGER( M, N, -TAU, V, 1, WORK, 1, C, LDC )
+         CALL DLARF( SIDE, M, N, V, 1, TAU, C, LDC, WORK )
          GO TO 410
    10    CONTINUE
 *
@@ -365,14 +360,7 @@
 *
 *        Code for general N
 *
-*        w := C * v
-*
-         CALL DGEMV( 'No transpose', M, N, ONE, C, LDC, V, 1, ZERO,
-     $               WORK, 1 )
-*
-*        C := C - tau * w * v'
-*
-         CALL DGER( M, N, -TAU, WORK, 1, V, 1, C, LDC )
+         CALL DLARF( SIDE, M, N, V, 1, TAU, C, LDC, WORK )
          GO TO 410
   210    CONTINUE
 *

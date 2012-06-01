@@ -4,14 +4,15 @@
      $                    WORK, IWORK, INFO )
       IMPLICIT NONE
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK auxiliary routine (version 3.3.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          RANGE
       INTEGER            IL, INFO, IU, M, N, NSPLIT
-      REAL              PIVMIN, RTOL1, RTOL2, SPLTOL, VL, VU
+      REAL               PIVMIN, RTOL1, RTOL2, SPLTOL, VL, VU
 *     ..
 *     .. Array Arguments ..
       INTEGER            IBLOCK( * ), ISPLIT( * ), IWORK( * ),
@@ -40,7 +41,7 @@
 *  Arguments
 *  =========
 *
-*  RANGE   (input) CHARACTER
+*  RANGE   (input) CHARACTER*1
 *          = 'A': ("All")   all eigenvalues will be found.
 *          = 'V': ("Value") all eigenvalues in the half-open interval
 *                           (VL, VU] will be found.
@@ -137,7 +138,7 @@
 *          The N Gerschgorin intervals (the i-th Gerschgorin interval
 *          is (GERS(2*i-1), GERS(2*i)).
 *
-*  PIVMIN  (output) DOUBLE PRECISION
+*  PIVMIN  (output) REAL
 *          The minimum pivot in the Sturm sequence for T.
 *
 *  WORK    (workspace) REAL             array, dimension (6*N)
@@ -306,6 +307,10 @@
 *     Can force use of bisection instead of faster DQDS.
 *     Option left in the code for future multisection work.
       FORCEB = .FALSE.
+
+*     Initialize USEDQD, DQDS should be used for ALLRNG unless someone
+*     explicitly wants bisection.
+      USEDQD = (( IRANGE.EQ.ALLRNG ) .AND. (.NOT.FORCEB))
 
       IF( (IRANGE.EQ.ALLRNG) .AND. (.NOT. FORCEB) ) THEN
 *        Set interval [VL,VU] that contains all eigenvalues

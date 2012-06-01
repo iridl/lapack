@@ -3,9 +3,12 @@
      $                   IWORK, LIWORK, INFO )
       IMPLICIT NONE
 *
-*  -- LAPACK computational routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK computational routine (version 3.2.1)                    --
+*
+*  -- April 2009                                                      --
+*
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBZ, RANGE
@@ -67,7 +70,7 @@
 *    Computer Science Division Technical Report No. UCB/CSD-97-971,
 *    UC Berkeley, May 1997.
 *
-*  Notes:
+*  Further Details
 *  1.ZSTEMR works only on machines which follow IEEE-754
 *  floating-point standard in their handling of infinities and NaNs.
 *  This permits the use of efficient inner loops avoiding a check for
@@ -273,7 +276,6 @@
 *
       LQUERY = ( ( LWORK.EQ.-1 ).OR.( LIWORK.EQ.-1 ) )
       ZQUERY = ( NZC.EQ.-1 )
-      TRYRAC = ( INFO.NE.0 )
 
 *     DSTEMR needs WORK of size 6*N, IWORK of size 3*N.
 *     In addition, DLARRE needs WORK of size 6*N, IWORK of size 5*N.

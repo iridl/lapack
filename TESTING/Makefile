@@ -37,7 +37,12 @@
 
 include ../make.inc
 
-all:     single complex double complex16 doubleproto complex16proto
+ifneq ($(strip $(VARLIB)),)
+    LAPACKLIB :=  $(VARLIB) ../$(LAPACKLIB)
+endif
+
+
+all:     single complex double complex16 singleproto doubleproto complexproto complex16proto
 
 SEIGTST= snep.out \
          ssep.out \
@@ -56,6 +61,7 @@ SEIGTST= snep.out \
          sglm.out \
          sgqr.out \
          sgsv.out \
+         scsd.out \
          slse.out
 
 CEIGTST= cnep.out \
@@ -75,6 +81,7 @@ CEIGTST= cnep.out \
          cglm.out \
          cgqr.out \
          cgsv.out \
+         ccsd.out \
          clse.out
 
 DEIGTST= dnep.out \
@@ -94,6 +101,7 @@ DEIGTST= dnep.out \
          dglm.out \
          dgqr.out \
          dgsv.out \
+         dcsd.out \
          dlse.out
 
 ZEIGTST= znep.out \
@@ -113,25 +121,32 @@ ZEIGTST= znep.out \
          zglm.out \
          zgqr.out \
          zgsv.out \
+         zcsd.out \
          zlse.out
 
 
 SLINTST= stest.out
 
+SLINTSTPROTO= stest_rfp.out
+
 CLINTST= ctest.out
+
+CLINTSTPROTO= ctest_rfp.out
 
 DLINTST= dtest.out
 
-DLINTSTPROTO= dstest.out
+DLINTSTPROTO= dstest.out dtest_rfp.out
 
 ZLINTST= ztest.out
 
-ZLINTSTPROTO= zctest.out
+ZLINTSTPROTO= zctest.out ztest_rfp.out
 
 single:         $(SLINTST) $(SEIGTST)
 complex:        $(CLINTST) $(CEIGTST)
 double:         $(DLINTST) $(DEIGTST)
 complex16:      $(ZLINTST) $(ZEIGTST)
+singleproto:    $(SLINTSTPROTO)
+complexproto:   $(CLINTSTPROTO)
 doubleproto:    $(DLINTSTPROTO)
 complex16proto: $(ZLINTSTPROTO)
 
@@ -171,6 +186,30 @@ dstest.out: dstest.in xlintstds
 zctest.out: zctest.in xlintstzc
 	@echo Testing COMPLEX-COMPLEX16 LAPACK protoype linear equation routines
 	./xlintstzc < zctest.in > $@ 2>&1
+#
+# ======== SINGLE RFP LIN TESTS ========================
+
+stest_rfp.out: stest_rfp.in xlintstrfs
+	@echo Testing REAL LAPACK RFP protoype linear equation routines
+	./xlintstrfs < stest_rfp.in > $@ 2>&1
+#
+# ======== COMPLEX16 RFP LIN TESTS ========================
+
+dtest_rfp.out: dtest_rfp.in xlintstrfd
+	@echo Testing DOUBLE PRECISION LAPACK RFP protoype linear equation routines
+	./xlintstrfd < dtest_rfp.in > $@ 2>&1
+#
+# ======== COMPLEX16 RFP LIN TESTS ========================
+
+ctest_rfp.out: ctest_rfp.in xlintstrfc
+	@echo Testing COMPLEX LAPACK RFP protoype linear equation routines
+	./xlintstrfc < ctest_rfp.in > $@ 2>&1
+#
+# ======== COMPLEX16 RFP LIN TESTS ========================
+
+ztest_rfp.out: ztest_rfp.in xlintstrfz
+	@echo Testing COMPLEX16 LAPACK RFP protoype linear equation routines
+	./xlintstrfz < ztest_rfp.in > $@ 2>&1
 #
 #
 # ======== SINGLE EIG TESTS ===========================
@@ -243,6 +282,10 @@ sgqr.out: gqr.in xeigtsts
 sgsv.out: gsv.in xeigtsts
 	@echo GSV: Testing Generalized Singular Value Decomposition routines
 	./xeigtsts < gsv.in > $@ 2>&1
+
+scsd.out: csd.in xeigtsts
+	@echo CSD: Testing CS Decomposition routines
+	./xeigtsts < csd.in > $@ 2>&1
 
 slse.out: lse.in xeigtsts
 	@echo LSE: Testing Constrained Linear Least Squares routines
@@ -318,6 +361,10 @@ cgsv.out: gsv.in xeigtstc
 	@echo GSV: Testing Generalized Singular Value Decomposition routines
 	./xeigtstc < gsv.in > $@ 2>&1
 
+ccsd.out: csd.in xeigtstc
+	@echo CSD: Testing CS Decomposition routines
+	./xeigtstc < csd.in > $@ 2>&1
+
 clse.out: lse.in xeigtstc
 	@echo LSE: Testing Constrained Linear Least Squares routines
 	./xeigtstc < lse.in > $@ 2>&1
@@ -391,6 +438,10 @@ dgqr.out: gqr.in xeigtstd
 dgsv.out: gsv.in xeigtstd
 	@echo GSV: Testing Generalized Singular Value Decomposition routines
 	./xeigtstd < gsv.in > $@ 2>&1
+
+dcsd.out: csd.in xeigtstd
+	@echo CSD: Testing CS Decomposition routines
+	./xeigtstd < csd.in > $@ 2>&1
 
 dlse.out: lse.in xeigtstd
 	@echo LSE: Testing Constrained Linear Least Squares routines
@@ -466,39 +517,55 @@ zgsv.out: gsv.in xeigtstz
 	@echo GSV: Testing Generalized Singular Value Decomposition routines
 	./xeigtstz < gsv.in > $@ 2>&1
 
+zcsd.out: csd.in xeigtstz
+	@echo CSD: Testing CS Decomposition routines
+	./xeigtstz < csd.in > $@ 2>&1
+
 zlse.out: lse.in xeigtstz
 	@echo LSE: Testing Constrained Linear Least Squares routines
 	./xeigtstz < lse.in > $@ 2>&1
 # ==============================================================================
 
-xlintsts:
+xlintsts:	../$(LAPACKLIB) ../$(TMGLIB) $(FRCLIN) $(FRC)
 	cd LIN ; $(MAKE) single
 
-xlintstc:
+xlintstc:	../$(LAPACKLIB) ../$(TMGLIB) $(FRCLIN) $(FRC)
 	cd LIN ; $(MAKE) complex
 
-xlintstd:
+xlintstd:	../$(LAPACKLIB) ../$(TMGLIB) $(FRCLIN) $(FRC)
 	cd LIN ; $(MAKE) double
 
-xlintstz:
+xlintstz:	../$(LAPACKLIB) ../$(TMGLIB) $(FRCLIN) $(FRC)
 	cd LIN ; $(MAKE) complex16
 
-xlintstds:
+xlintstrfs:	../$(LAPACKLIB) ../$(TMGLIB) $(FRCLIN) $(FRC)
+	cd LIN ; $(MAKE) proto-single
+
+xlintstrfc:	../$(LAPACKLIB) ../$(TMGLIB) $(FRCLIN) $(FRC)
+	cd LIN ; $(MAKE) proto-complex
+
+xlintstrfd:	../$(LAPACKLIB) ../$(TMGLIB) $(FRCLIN) $(FRC)
 	cd LIN ; $(MAKE) proto-double
 
-xlintstzc:
+xlintstrfz:	../$(LAPACKLIB) ../$(TMGLIB) $(FRCLIN) $(FRC)
 	cd LIN ; $(MAKE) proto-complex16
 
-xeigtsts:
+xlintstds:	../$(LAPACKLIB) ../$(TMGLIB) $(FRCLIN) $(FRC)
+	cd LIN ; $(MAKE) proto-double
+
+xlintstzc:	../$(LAPACKLIB) ../$(TMGLIB) $(FRCLIN) $(FRC)
+	cd LIN ; $(MAKE) proto-complex16
+
+xeigtsts:	../$(LAPACKLIB) ../$(TMGLIB) $(FRCEIG) $(FRC)
 	cd EIG ; $(MAKE) single
 
-xeigtstc:
+xeigtstc:	../$(LAPACKLIB) ../$(TMGLIB) $(FRCEIG) $(FRC)
 	cd EIG ; $(MAKE) complex
 
-xeigtstd:
+xeigtstd:	../$(LAPACKLIB) ../$(TMGLIB) $(FRCEIG) $(FRC)
 	cd EIG ; $(MAKE) double
 
-xeigtstz:
+xeigtstz:	../$(LAPACKLIB) ../$(TMGLIB) $(FRCEIG) $(FRC)
 	cd EIG ; $(MAKE) complex16
 
 clean:
@@ -506,3 +573,12 @@ clean:
 
 cleanup:
 	rm -f x* *.out core
+
+FRCLIN:
+	@FRCLIN=$(FRCLIN)
+
+FRCEIG:
+	@FRCEIG=$(FRCEIG)
+
+FRC:
+	@FRC=$(FRC)

@@ -2,9 +2,10 @@
      $                   ABSTOL, M, W, Z, LDZ, ISUPPZ, WORK, LWORK,
      $                   RWORK, LRWORK, IWORK, LIWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK driver routine (version 3.2.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     June 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBZ, RANGE, UPLO
@@ -245,7 +246,7 @@
 *
 *     .. Parameters ..
       REAL               ZERO, ONE, TWO
-      PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0, TWO = 1.0E+0 )
+      PARAMETER          ( ZERO = 0.0E+0, ONE = 1.0E+0, TWO = 2.0E+0 )
 *     ..
 *     .. Local Scalars ..
       LOGICAL            ALLEIG, INDEIG, LOWER, LQUERY, TEST, VALEIG,
@@ -364,8 +365,11 @@
                W( 1 ) = REAL( A( 1, 1 ) )
             END IF
          END IF
-         IF( WANTZ )
-     $      Z( 1, 1 ) = ONE
+         IF( WANTZ ) THEN
+            Z( 1, 1 ) = ONE
+            ISUPPZ( 1 ) = 1
+            ISUPPZ( 2 ) = 1
+         END IF
          RETURN
       END IF
 *

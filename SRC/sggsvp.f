@@ -2,8 +2,9 @@
      $                   TOLA, TOLB, K, L, U, LDU, V, LDV, Q, LDQ,
      $                   IWORK, TAU, WORK, INFO )
 *
-*  -- LAPACK routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *     November 2006
 *
 *     .. Scalar Arguments ..
@@ -109,7 +110,7 @@
 *          The leading dimension of the array U. LDU >= max(1,M) if
 *          JOBU = 'U'; LDU >= 1 otherwise.
 *
-*  V       (output) REAL array, dimension (LDV,M)
+*  V       (output) REAL array, dimension (LDV,P)
 *          If JOBV = 'V', V contains the orthogonal matrix V.
 *          If JOBV = 'N', V is not referenced.
 *

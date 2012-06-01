@@ -2,9 +2,12 @@
      $                   NSVAL, THRESH, TSTERR, NMAX, A, AFAC, AINV, B,
      $                   X, XACT, WORK, RWORK, IWORK, NOUT )
 *
-*  -- LAPACK test routine (version 3.1.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     January 2007
+*  -- LAPACK test routine (version 3.2.1) --
+*
+*  -- April 2009                                                   --
+*
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -134,7 +137,7 @@
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
-      CHARACTER*6        SRNAMT
+      CHARACTER*32       SRNAMT
       INTEGER            INFOT, NUNIT
 *     ..
 *     .. Common blocks ..
@@ -406,7 +409,7 @@
                         CALL DGET04( N, NRHS, X, LDA, XACT, LDA, RCONDC,
      $                               RESULT( 5 ) )
                         CALL DGET07( TRANS, N, NRHS, A, LDA, B, LDA, X,
-     $                               LDA, XACT, LDA, RWORK,
+     $                               LDA, XACT, LDA, RWORK, .TRUE.,
      $                               RWORK( NRHS+1 ), RESULT( 6 ) )
 *
 *                       Print information about the tests that did not

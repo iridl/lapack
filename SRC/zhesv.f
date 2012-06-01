@@ -1,9 +1,10 @@
       SUBROUTINE ZHESV( UPLO, N, NRHS, A, LDA, IPIV, B, LDB, WORK,
      $                  LWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK driver routine (version 3.3.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          UPLO
@@ -112,7 +113,7 @@
       EXTERNAL           LSAME, ILAENV
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           XERBLA, ZHETRF, ZHETRS
+      EXTERNAL           XERBLA, ZHETRF, ZHETRS2
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX
@@ -161,7 +162,7 @@
 *
 *        Solve the system A*X = B, overwriting B with X.
 *
-         CALL ZHETRS( UPLO, N, NRHS, A, LDA, IPIV, B, LDB, INFO )
+         CALL ZHETRS2( UPLO, N, NRHS, A, LDA, IPIV, B, LDB, WORK, INFO )
 *
       END IF
 *

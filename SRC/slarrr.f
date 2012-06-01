@@ -1,8 +1,9 @@
       SUBROUTINE SLARRR( N, D, E, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK auxiliary routine (version 3.2.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            N, INFO
@@ -28,7 +29,7 @@
 *  D       (input) REAL             array, dimension (N)
 *          The N diagonal elements of the tridiagonal matrix T.
 *
-*  E       (input/output) REAL             array, dimension (N)
+*  E       (input/output) REAL array, dimension (N)
 *          On entry, the first (N-1) entries contain the subdiagonal
 *          elements of the tridiagonal matrix T; E(N) is set to ZERO.
 *

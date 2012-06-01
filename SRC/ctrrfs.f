@@ -1,8 +1,9 @@
       SUBROUTINE CTRRFS( UPLO, TRANS, DIAG, N, NRHS, A, LDA, B, LDB, X,
      $                   LDX, FERR, BERR, WORK, RWORK, INFO )
 *
-*  -- LAPACK routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *     November 2006
 *
 *     Modified to call CLACN2 in place of CLACON, 10 Feb 03, SJH.

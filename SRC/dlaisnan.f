@@ -1,11 +1,12 @@
-      LOGICAL FUNCTION DLAISNAN(DIN1,DIN2)
+      LOGICAL FUNCTION DLAISNAN( DIN1, DIN2 )
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK auxiliary routine (version 3.2.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     June 2010
 *
 *     .. Scalar Arguments ..
-      DOUBLE PRECISION DIN1,DIN2
+      DOUBLE PRECISION   DIN1, DIN2
 *     ..
 *
 *  Purpose
@@ -19,8 +20,7 @@
 *  returns .TRUE.  To check for NaNs, pass the same variable as both
 *  arguments.
 *
-*  Strictly speaking, Fortran does not allow aliasing of function
-*  arguments. So a compiler must assume that the two arguments are
+*  A compiler must assume that the two arguments are
 *  not the same variable, and the test will not be optimized away.
 *  Interprocedural or whole-program optimization may delete this
 *  test.  The ISNAN functions will be replaced by the correct
@@ -29,8 +29,9 @@
 *  Arguments
 *  =========
 *
-*  DIN1     (input) DOUBLE PRECISION
-*  DIN2     (input) DOUBLE PRECISION
+*  DIN1    (input) DOUBLE PRECISION
+*
+*  DIN2    (input) DOUBLE PRECISION
 *          Two numbers to compare for inequality.
 *
 *  =====================================================================

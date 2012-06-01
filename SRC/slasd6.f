@@ -3,9 +3,10 @@
      $                   LDGNUM, POLES, DIFL, DIFR, Z, K, C, S, WORK,
      $                   IWORK, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK auxiliary routine (version 3.3.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            GIVPTR, ICOMPQ, INFO, K, LDGCOL, LDGNUM, NL,
@@ -190,7 +191,7 @@
 *  INFO   (output) INTEGER
 *          = 0:  successful exit.
 *          < 0:  if INFO = -i, the i-th argument had an illegal value.
-*          > 0:  if INFO = 1, an singular value did not converge
+*          > 0:  if INFO = 1, a singular value did not converge
 *
 *  Further Details
 *  ===============
@@ -280,6 +281,13 @@
 *
       CALL SLASD8( ICOMPQ, K, D, Z, VF, VL, DIFL, DIFR, LDGNUM,
      $             WORK( ISIGMA ), WORK( IW ), INFO )
+*
+*     Handle error returned
+*
+      IF( INFO.NE.0 ) THEN
+         CALL XERBLA( 'SLASD8', -INFO )
+         RETURN
+      END IF
 *
 *     Save the poles if ICOMPQ = 1.
 *

@@ -1,9 +1,10 @@
       SUBROUTINE DLAQP2( M, N, OFFSET, A, LDA, JPVT, TAU, VN1, VN2,
      $                   WORK )
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK auxiliary routine (version 3.2.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            LDA, M, N, OFFSET
@@ -74,7 +75,7 @@
 *  Partial column norm updating strategy modified by
 *    Z. Drmac and Z. Bujanovic, Dept. of Mathematics,
 *    University of Zagreb, Croatia.
-*    June 2006.
+*     June 2010
 *  For more details see LAPACK Working Note 176.
 *  =====================================================================
 *
@@ -130,7 +131,7 @@
             CALL DLARFG( 1, A( M, I ), A( M, I ), 1, TAU( I ) )
          END IF
 *
-         IF( I.LT.N ) THEN
+         IF( I.LE.N ) THEN
 *
 *           Apply H(i)' to A(offset+i:m,i+1:n) from the left.
 *

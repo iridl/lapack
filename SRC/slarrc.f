@@ -1,9 +1,10 @@
       SUBROUTINE SLARRC( JOBT, N, VL, VU, D, E, PIVMIN,
      $                            EIGCNT, LCNT, RCNT, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK auxiliary routine (version 3.2.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     June 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBT
@@ -43,7 +44,7 @@
 *          JOBT = 'T': The N-1 offdiagonal elements of the matrix T.
 *          JOBT = 'L': The N-1 offdiagonal elements of the matrix L.
 *
-*  PIVMIN  (input) DOUBLE PRECISION
+*  PIVMIN  (input) REAL
 *          The minimum pivot in the Sturm sequence for T.
 *
 *  EIGCNT  (output) INTEGER

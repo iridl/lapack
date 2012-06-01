@@ -2,9 +2,10 @@
      $                   RTOL, OFFSET, W, WERR, WORK, IWORK,
      $                   PIVMIN, SPDIAM, INFO )
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK auxiliary routine (version 3.2.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            IFIRST, ILAST, INFO, N, OFFSET
@@ -45,7 +46,7 @@
 *  ILAST   (input) INTEGER
 *          The index of the last eigenvalue to be computed.
 *
-*  RTOL   (input) DOUBLE PRECISION
+*  RTOL    (input) DOUBLE PRECISION
 *          Tolerance for the convergence of the bisection intervals.
 *          An interval [LEFT,RIGHT] has converged if
 *          RIGHT-LEFT.LT.RTOL*MAX(|LEFT|,|RIGHT|).

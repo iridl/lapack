@@ -2,9 +2,10 @@
      $                   SR, SI, H, LDH, ILOZ, IHIZ, Z, LDZ, V, LDV, U,
      $                   LDU, NV, WV, LDWV, NH, WH, LDWH )
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK auxiliary routine (version 3.3.0) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     November 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            IHIZ, ILOZ, KACC22, KBOT, KTOP, LDH, LDU, LDV,
@@ -58,11 +59,12 @@
 *             NSHFTS gives the number of simultaneous shifts.  NSHFTS
 *             must be positive and even.
 *
-*      SR     (input) DOUBLE PRECISION array of size (NSHFTS)
-*      SI     (input) DOUBLE PRECISION array of size (NSHFTS)
+*      SR     (input/output) DOUBLE PRECISION array of size (NSHFTS)
+*      SI     (input/output) DOUBLE PRECISION array of size (NSHFTS)
 *             SR contains the real parts and SI contains the imaginary
 *             parts of the NSHFTS shifts of origin that define the
-*             multi-shift QR sweep.
+*             multi-shift QR sweep.  On output SR and SI may be
+*             reordered.
 *
 *      H      (input/output) DOUBLE PRECISION array of size (LDH,N)
 *             On input H contains a Hessenberg matrix.  On output a
@@ -123,13 +125,12 @@
 *             LDWV is the leading dimension of WV as declared in the
 *             in the calling subroutine.  LDWV.GE.NV.
 *
-*
 *     ================================================================
 *     Based on contributions by
 *        Karen Braman and Ralph Byers, Department of Mathematics,
 *        University of Kansas, USA
 *
-*     ============================================================
+*     ================================================================
 *     Reference:
 *
 *     K. Braman, R. Byers and R. Mathias, The Multi-Shift QR
@@ -137,7 +138,7 @@
 *     Level 3 Performance, SIAM Journal of Matrix Analysis,
 *     volume 23, pages 929--947, 2002.
 *
-*     ============================================================
+*     ================================================================
 *     .. Parameters ..
       DOUBLE PRECISION   ZERO, ONE
       PARAMETER          ( ZERO = 0.0d0, ONE = 1.0d0 )
@@ -200,7 +201,7 @@
          END IF
    10 CONTINUE
 *
-*     ==== NSHFTS is supposed to be even, but if is odd,
+*     ==== NSHFTS is supposed to be even, but if it is odd,
 *     .    then simply reduce it by one.  The shuffle above
 *     .    ensures that the dropped shift is real and that
 *     .    the remaining shifts are paired. ====
@@ -289,19 +290,12 @@
                   CALL DLARFG( 3, BETA, V( 2, M ), 1, V( 1, M ) )
 *
 *                 ==== A Bulge may collapse because of vigilant
-*                 .    deflation or destructive underflow.  (The
-*                 .    initial bulge is always collapsed.) Use
-*                 .    the two-small-subdiagonals trick to try
-*                 .    to get it started again. If V(2,M).NE.0 and
-*                 .    V(3,M) = H(K+3,K+1) = H(K+3,K+2) = 0, then
-*                 .    this bulge is collapsing into a zero
-*                 .    subdiagonal.  It will be restarted next
-*                 .    trip through the loop.)
+*                 .    deflation or destructive underflow.  In the
+*                 .    underflow case, try the two-small-subdiagonals
+*                 .    trick to try to reinflate the bulge.  ====
 *
-                  IF( V( 1, M ).NE.ZERO .AND.
-     $                ( V( 3, M ).NE.ZERO .OR. ( H( K+3,
-     $                K+1 ).EQ.ZERO .AND. H( K+3, K+2 ).EQ.ZERO ) ) )
-     $                 THEN
+                  IF( H( K+3, K ).NE.ZERO .OR. H( K+3, K+1 ).NE.
+     $                ZERO .OR. H( K+3, K+2 ).EQ.ZERO ) THEN
 *
 *                    ==== Typical case: not collapsed (yet). ====
 *
@@ -311,46 +305,31 @@
                   ELSE
 *
 *                    ==== Atypical case: collapsed.  Attempt to
-*                    .    reintroduce ignoring H(K+1,K).  If the
-*                    .    fill resulting from the new reflector
-*                    .    is too large, then abandon it.
+*                    .    reintroduce ignoring H(K+1,K) and H(K+2,K).
+*                    .    If the fill resulting from the new
+*                    .    reflector is too large, then abandon it.
 *                    .    Otherwise, use the new one. ====
 *
                      CALL DLAQR1( 3, H( K+1, K+1 ), LDH, SR( 2*M-1 ),
      $                            SI( 2*M-1 ), SR( 2*M ), SI( 2*M ),
      $                            VT )
-                     SCL = ABS( VT( 1 ) ) + ABS( VT( 2 ) ) +
-     $                     ABS( VT( 3 ) )
-                     IF( SCL.NE.ZERO ) THEN
-                        VT( 1 ) = VT( 1 ) / SCL
-                        VT( 2 ) = VT( 2 ) / SCL
-                        VT( 3 ) = VT( 3 ) / SCL
-                     END IF
+                     ALPHA = VT( 1 )
+                     CALL DLARFG( 3, ALPHA, VT( 2 ), 1, VT( 1 ) )
+                     REFSUM = VT( 1 )*( H( K+1, K )+VT( 2 )*
+     $                        H( K+2, K ) )
 *
-*                    ==== The following is the traditional and
-*                    .    conservative two-small-subdiagonals
-*                    .    test.  ====
-*                    .
-                     IF( ABS( H( K+1, K ) )*( ABS( VT( 2 ) )+
-     $                   ABS( VT( 3 ) ) ).GT.ULP*ABS( VT( 1 ) )*
+                     IF( ABS( H( K+2, K )-REFSUM*VT( 2 ) )+
+     $                   ABS( REFSUM*VT( 3 ) ).GT.ULP*
      $                   ( ABS( H( K, K ) )+ABS( H( K+1,
      $                   K+1 ) )+ABS( H( K+2, K+2 ) ) ) ) THEN
 *
 *                       ==== Starting a new bulge here would
-*                       .    create non-negligible fill.   If
-*                       .    the old reflector is diagonal (only
-*                       .    possible with underflows), then
-*                       .    change it to I.  Otherwise, use
-*                       .    it with trepidation. ====
+*                       .    create non-negligible fill.  Use
+*                       .    the old one with trepidation. ====
 *
-                        IF( V( 2, M ).EQ.ZERO .AND. V( 3, M ).EQ.ZERO )
-     $                       THEN
-                           V( 1, M ) = ZERO
-                        ELSE
-                           H( K+1, K ) = BETA
-                           H( K+2, K ) = ZERO
-                           H( K+3, K ) = ZERO
-                        END IF
+                        H( K+1, K ) = BETA
+                        H( K+2, K ) = ZERO
+                        H( K+3, K ) = ZERO
                      ELSE
 *
 *                       ==== Stating a new bulge here would
@@ -358,11 +337,7 @@
 *                       .    Replace the old reflector with
 *                       .    the new one. ====
 *
-                        ALPHA = VT( 1 )
-                        CALL DLARFG( 3, ALPHA, VT( 2 ), 1, VT( 1 ) )
-                        REFSUM = H( K+1, K ) + H( K+2, K )*VT( 2 ) +
-     $                           H( K+3, K )*VT( 3 )
-                        H( K+1, K ) = H( K+1, K ) - VT( 1 )*REFSUM
+                        H( K+1, K ) = H( K+1, K ) - REFSUM
                         H( K+2, K ) = ZERO
                         H( K+3, K ) = ZERO
                         V( 1, M ) = VT( 1 )
@@ -390,12 +365,6 @@
                   H( K+1, K ) = BETA
                   H( K+2, K ) = ZERO
                END IF
-            ELSE
-*
-*              ==== Initialize V(1,M22) here to avoid possible undefined
-*              .    variable problems later. ====
-*
-               V( 1, M22 ) = ZERO
             END IF
 *
 *           ==== Multiply H by reflections from the left ====
@@ -484,29 +453,32 @@
 *           ==== Special case: 2-by-2 reflection (if needed) ====
 *
             K = KRCOL + 3*( M22-1 )
-            IF( BMP22 .AND. ( V( 1, M22 ).NE.ZERO ) ) THEN
-               DO 100 J = JTOP, MIN( KBOT, K+3 )
-                  REFSUM = V( 1, M22 )*( H( J, K+1 )+V( 2, M22 )*
-     $                     H( J, K+2 ) )
-                  H( J, K+1 ) = H( J, K+1 ) - REFSUM
-                  H( J, K+2 ) = H( J, K+2 ) - REFSUM*V( 2, M22 )
-  100          CONTINUE
+            IF( BMP22 ) THEN
+               IF ( V( 1, M22 ).NE.ZERO ) THEN
+                  DO 100 J = JTOP, MIN( KBOT, K+3 )
+                     REFSUM = V( 1, M22 )*( H( J, K+1 )+V( 2, M22 )*
+     $                        H( J, K+2 ) )
+                     H( J, K+1 ) = H( J, K+1 ) - REFSUM
+                     H( J, K+2 ) = H( J, K+2 ) - REFSUM*V( 2, M22 )
+  100             CONTINUE
 *
-               IF( ACCUM ) THEN
-                  KMS = K - INCOL
-                  DO 110 J = MAX( 1, KTOP-INCOL ), KDU
-                     REFSUM = V( 1, M22 )*( U( J, KMS+1 )+V( 2, M22 )*
-     $                        U( J, KMS+2 ) )
-                     U( J, KMS+1 ) = U( J, KMS+1 ) - REFSUM
-                     U( J, KMS+2 ) = U( J, KMS+2 ) - REFSUM*V( 2, M22 )
+                  IF( ACCUM ) THEN
+                     KMS = K - INCOL
+                     DO 110 J = MAX( 1, KTOP-INCOL ), KDU
+                        REFSUM = V( 1, M22 )*( U( J, KMS+1 )+
+     $                           V( 2, M22 )*U( J, KMS+2 ) )
+                        U( J, KMS+1 ) = U( J, KMS+1 ) - REFSUM
+                        U( J, KMS+2 ) = U( J, KMS+2 ) -
+     $                                  REFSUM*V( 2, M22 )
   110             CONTINUE
-               ELSE IF( WANTZ ) THEN
-                  DO 120 J = ILOZ, IHIZ
-                     REFSUM = V( 1, M22 )*( Z( J, K+1 )+V( 2, M22 )*
-     $                        Z( J, K+2 ) )
-                     Z( J, K+1 ) = Z( J, K+1 ) - REFSUM
-                     Z( J, K+2 ) = Z( J, K+2 ) - REFSUM*V( 2, M22 )
-  120             CONTINUE
+                  ELSE IF( WANTZ ) THEN
+                     DO 120 J = ILOZ, IHIZ
+                        REFSUM = V( 1, M22 )*( Z( J, K+1 )+V( 2, M22 )*
+     $                           Z( J, K+2 ) )
+                        Z( J, K+1 ) = Z( J, K+1 ) - REFSUM
+                        Z( J, K+2 ) = Z( J, K+2 ) - REFSUM*V( 2, M22 )
+  120                CONTINUE
+                  END IF
                END IF
             END IF
 *
@@ -682,7 +654,7 @@
                   CALL DGEMM( 'C', 'N', I2, JLEN, J2, ONE, U, LDU,
      $                        H( INCOL+1, JCOL ), LDH, ONE, WH, LDWH )
 *
-*                 ==== Copy top of H bottom of WH ====
+*                 ==== Copy top of H to bottom of WH ====
 *
                   CALL DLACPY( 'ALL', J2, JLEN, H( INCOL+1, JCOL ), LDH,
      $                         WH( I2+1, 1 ), LDWH )

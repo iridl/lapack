@@ -1,8 +1,9 @@
       SUBROUTINE ZTRSYL( TRANA, TRANB, ISGN, M, N, A, LDA, B, LDB, C,
      $                   LDC, SCALE, INFO )
 *
-*  -- LAPACK routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *     November 2006
 *
 *     .. Scalar Arguments ..
@@ -142,6 +143,7 @@
 *
 *     Quick return if possible
 *
+      SCALE = ONE
       IF( M.EQ.0 .OR. N.EQ.0 )
      $   RETURN
 *
@@ -155,7 +157,6 @@
       BIGNUM = ONE / SMLNUM
       SMIN = MAX( SMLNUM, EPS*ZLANGE( 'M', M, M, A, LDA, DUM ),
      $       EPS*ZLANGE( 'M', N, N, B, LDB, DUM ) )
-      SCALE = ONE
       SGN = ISGN
 *
       IF( NOTRNA .AND. NOTRNB ) THEN

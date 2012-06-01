@@ -4,7 +4,7 @@
 *
 *  -- LAPACK test routine (version 3.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -131,7 +131,7 @@
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
-      CHARACTER*6        SRNAMT
+      CHARACTER*32       SRNAMT
       INTEGER            INFOT, NUNIT
 *     ..
 *     .. Common blocks ..
@@ -230,6 +230,9 @@
                      CALL XLAENV( 1, NB )
                      NX = NXVAL( INB )
                      CALL XLAENV( 3, NX )
+                     DO I = 1, NTESTS
+                        RESULT( I ) = ZERO
+                     END DO
                      NT = 2
                      IF( IK.EQ.1 ) THEN
 *
@@ -244,9 +247,6 @@
 *
                         CALL SLQT02( M, N, K, A, AF, AQ, AL, LDA, TAU,
      $                               WORK, LWORK, RWORK, RESULT( 1 ) )
-                     ELSE
-                        RESULT( 1 ) = ZERO
-                        RESULT( 2 ) = ZERO
                      END IF
                      IF( M.GE.K ) THEN
 *
@@ -289,20 +289,13 @@
      $                                  LDA, X, LDA, B, LDA, RWORK,
      $                                  RESULT( 7 ) )
                            NT = NT + 1
-                        ELSE
-                           RESULT( 7 ) = ZERO
                         END IF
-                     ELSE
-                        RESULT( 3 ) = ZERO
-                        RESULT( 4 ) = ZERO
-                        RESULT( 5 ) = ZERO
-                        RESULT( 6 ) = ZERO
                      END IF
 *
 *                    Print information about the tests that did not
 *                    pass the threshold.
 *
-                     DO 20 I = 1, NT
+                     DO 20 I = 1, NTESTS
                         IF( RESULT( I ).GE.THRESH ) THEN
                            IF( NFAIL.EQ.0 .AND. NERRS.EQ.0 )
      $                        CALL ALAHD( NOUT, PATH )

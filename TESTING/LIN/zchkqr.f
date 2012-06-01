@@ -4,7 +4,7 @@
 *
 *  -- LAPACK test routine (version 3.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -103,7 +103,7 @@
 *
 *     .. Parameters ..
       INTEGER            NTESTS
-      PARAMETER          ( NTESTS = 7 )
+      PARAMETER          ( NTESTS = 9 )
       INTEGER            NTYPES
       PARAMETER          ( NTYPES = 8 )
       DOUBLE PRECISION   ZERO
@@ -121,17 +121,21 @@
       INTEGER            ISEED( 4 ), ISEEDY( 4 ), KVAL( 4 )
       DOUBLE PRECISION   RESULT( NTESTS )
 *     ..
+*     .. External Functions ..
+      LOGICAL            ZGENND
+      EXTERNAL           ZGENND
+*     ..
 *     .. External Subroutines ..
       EXTERNAL           ALAERH, ALAHD, ALASUM, XLAENV, ZERRQR, ZGEQRS,
      $                   ZGET02, ZLACPY, ZLARHS, ZLATB4, ZLATMS, ZQRT01,
-     $                   ZQRT02, ZQRT03
+     $                   ZQRT01P, ZQRT02, ZQRT03
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          MAX, MIN
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
-      CHARACTER*6        SRNAMT
+      CHARACTER*32       SRNAMT
       INTEGER            INFOT, NUNIT
 *     ..
 *     .. Common blocks ..
@@ -230,6 +234,9 @@
                      CALL XLAENV( 1, NB )
                      NX = NXVAL( INB )
                      CALL XLAENV( 3, NX )
+                     DO I = 1, NTESTS
+                        RESULT( I ) = ZERO
+                     END DO
                      NT = 2
                      IF( IK.EQ.1 ) THEN
 *
@@ -237,6 +244,15 @@
 *
                         CALL ZQRT01( M, N, A, AF, AQ, AR, LDA, TAU,
      $                               WORK, LWORK, RWORK, RESULT( 1 ) )
+*
+*                       Test ZGEQRFP
+*
+                        CALL ZQRT01P( M, N, A, AF, AQ, AR, LDA, TAU,
+     $                               WORK, LWORK, RWORK, RESULT( 8 ) )
+
+                         IF( .NOT. ZGENND( M, N, AF, LDA ) )
+     $                       RESULT( 9 ) = 2*THRESH
+                        NT = NT + 1
                      ELSE IF( M.GE.N ) THEN
 *
 *                       Test ZUNGQR, using factorization
@@ -244,9 +260,6 @@
 *
                         CALL ZQRT02( M, N, K, A, AF, AQ, AR, LDA, TAU,
      $                               WORK, LWORK, RWORK, RESULT( 1 ) )
-                     ELSE
-                        RESULT( 1 ) = ZERO
-                        RESULT( 2 ) = ZERO
                      END IF
                      IF( M.GE.K ) THEN
 *
@@ -289,20 +302,13 @@
      $                                  LDA, X, LDA, B, LDA, RWORK,
      $                                  RESULT( 7 ) )
                            NT = NT + 1
-                        ELSE
-                           RESULT( 7 ) = ZERO
                         END IF
-                     ELSE
-                        RESULT( 3 ) = ZERO
-                        RESULT( 4 ) = ZERO
-                        RESULT( 5 ) = ZERO
-                        RESULT( 6 ) = ZERO
                      END IF
 *
 *                    Print information about the tests that did not
 *                    pass the threshold.
 *
-                     DO 20 I = 1, NT
+                     DO 20 I = 1, NTESTS
                         IF( RESULT( I ).GE.THRESH ) THEN
                            IF( NFAIL.EQ.0 .AND. NERRS.EQ.0 )
      $                        CALL ALAHD( NOUT, PATH )

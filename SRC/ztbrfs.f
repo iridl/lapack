@@ -1,8 +1,9 @@
       SUBROUTINE ZTBRFS( UPLO, TRANS, DIAG, N, KD, NRHS, AB, LDAB, B,
      $                   LDB, X, LDX, FERR, BERR, WORK, RWORK, INFO )
 *
-*  -- LAPACK routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*  -- LAPACK routine (version 3.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *     November 2006
 *
 *     Modified to call ZLACN2 in place of ZLACON, 10 Feb 03, SJH.

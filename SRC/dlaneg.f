@@ -1,10 +1,10 @@
-      FUNCTION DLANEG( N, D, LLD, SIGMA, PIVMIN, R )
+      INTEGER FUNCTION DLANEG( N, D, LLD, SIGMA, PIVMIN, R )
       IMPLICIT NONE
-      INTEGER DLANEG
 *
-*  -- LAPACK auxiliary routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK auxiliary routine (version 3.2.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     June 2010
 *
 *     .. Scalar Arguments ..
       INTEGER            N, R

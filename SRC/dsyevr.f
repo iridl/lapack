@@ -2,9 +2,10 @@
      $                   ABSTOL, M, W, Z, LDZ, ISUPPZ, WORK, LWORK,
      $                   IWORK, LIWORK, INFO )
 *
-*  -- LAPACK driver routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*  -- LAPACK driver routine (version 3.2.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+*     June 2010
 *
 *     .. Scalar Arguments ..
       CHARACTER          JOBZ, RANGE, UPLO
@@ -228,7 +229,7 @@
 *
 *     .. Parameters ..
       DOUBLE PRECISION   ZERO, ONE, TWO
-      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0, TWO = 0.0D+0 )
+      PARAMETER          ( ZERO = 0.0D+0, ONE = 1.0D+0, TWO = 2.0D+0 )
 *     ..
 *     .. Local Scalars ..
       LOGICAL            ALLEIG, INDEIG, LOWER, LQUERY, VALEIG, WANTZ,
@@ -338,8 +339,11 @@
                W( 1 ) = A( 1, 1 )
             END IF
          END IF
-         IF( WANTZ )
-     $      Z( 1, 1 ) = ONE
+         IF( WANTZ ) THEN
+            Z( 1, 1 ) = ONE
+            ISUPPZ( 1 ) = 1
+            ISUPPZ( 2 ) = 1
+         END IF
          RETURN
       END IF
 *
@@ -356,8 +360,10 @@
 *
       ISCALE = 0
       ABSTLL = ABSTOL
-      VLL = VL
-      VUU = VU
+      IF (VALEIG) THEN
+         VLL = VL
+         VUU = VU
+      END IF
       ANRM = DLANSY( 'M', UPLO, N, A, LDA, WORK )
       IF( ANRM.GT.ZERO .AND. ANRM.LT.RMIN ) THEN
          ISCALE = 1

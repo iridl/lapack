@@ -2,8 +2,9 @@
      $                   ABSTOL, M, W, Z, LDZ, WORK, IWORK, IFAIL,
      $                   INFO )
 *
-*  -- LAPACK driver routine (version 3.1) --
-*     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
+*  -- LAPACK driver routine (version 3.2) --
+*  -- LAPACK is a software package provided by Univ. of Tennessee,    --
+*  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
 *     November 2006
 *
 *     .. Scalar Arguments ..
@@ -329,7 +330,7 @@
 *        form to eigenvectors returned by DSTEIN.
 *
          CALL DOPMTR( 'L', UPLO, 'N', N, M, AP, WORK( INDTAU ), Z, LDZ,
-     $                WORK( INDWRK ), INFO )
+     $                WORK( INDWRK ), IINFO )
       END IF
 *
 *     If matrix was scaled, then rescale eigenvalues appropriately.

@@ -106,11 +106,11 @@
 *     .. External Subroutines ..
       EXTERNAL           ALADHD, ALAERH, ALASVM, SERRVX, SGET04, SLACPY,
      $                   SLARHS, SLASET, SLATB4, SLATMS, SPOT02, SPOT05,
-     $                   SSYSV, SSYSVX, SSYT01, SSYTRF, SSYTRI, XLAENV
+     $                   SSYSV, SSYSVX, SSYT01, SSYTRF, SSYTRI2, XLAENV
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
-      CHARACTER*6        SRNAMT
+      CHARACTER*32       SRNAMT
       INTEGER            INFOT, NUNIT
 *     ..
 *     .. Common blocks ..
@@ -294,8 +294,9 @@
 *                    Compute inv(A) and take its norm.
 *
                      CALL SLACPY( UPLO, N, N, AFAC, LDA, AINV, LDA )
-                     CALL SSYTRI( UPLO, N, AINV, LDA, IWORK, WORK,
-     $                            INFO )
+                     LWORK = (N+NB+1)*(NB+3)
+                     CALL SSYTRI2( UPLO, N, AINV, LDA, IWORK, WORK,
+     $                            LWORK, INFO )
                      AINVNM = SLANSY( '1', UPLO, N, AINV, LDA, RWORK )
 *
 *                    Compute the 1-norm condition number of A.
@@ -493,9 +494,9 @@
 *
       CALL ALASVM( PATH, NOUT, NFAIL, NRUN, NERRS )
 *
- 9999 FORMAT( 1X, A6, ', UPLO=''', A1, ''', N =', I5, ', type ', I2,
+ 9999 FORMAT( 1X, A, ', UPLO=''', A1, ''', N =', I5, ', type ', I2,
      $      ', test ', I2, ', ratio =', G12.5 )
- 9998 FORMAT( 1X, A6, ', FACT=''', A1, ''', UPLO=''', A1, ''', N =', I5,
+ 9998 FORMAT( 1X, A, ', FACT=''', A1, ''', UPLO=''', A1, ''', N =', I5,
      $      ', type ', I2, ', test ', I2, ', ratio =', G12.5 )
       RETURN
 *

@@ -4,7 +4,7 @@
 *
 *  -- LAPACK test routine (version 3.1) --
 *     Univ. of Tennessee, Univ. of California Berkeley and NAG Ltd..
-*     November 2006
+*     June 2010
 *
 *     .. Scalar Arguments ..
       LOGICAL            TSTERR
@@ -131,7 +131,7 @@
 *     ..
 *     .. Scalars in Common ..
       LOGICAL            LERR, OK
-      CHARACTER*6        SRNAMT
+      CHARACTER*32       SRNAMT
       INTEGER            INFOT, NUNIT
 *     ..
 *     .. Common blocks ..
@@ -230,6 +230,9 @@
                      CALL XLAENV( 1, NB )
                      NX = NXVAL( INB )
                      CALL XLAENV( 3, NX )
+                     DO I = 1, NTESTS
+                        RESULT( I ) = ZERO
+                     END DO
                      NT = 2
                      IF( IK.EQ.1 ) THEN
 *
